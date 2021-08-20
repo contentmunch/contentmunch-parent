@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-parent</artifactId>
-    <version>1.0.2.RELEASE</version>
+    <version>1.0.3.RELEASE</version>
     <name>contentmunch-parent</name>
     <description>Contentmunch parent pom</description>
 
