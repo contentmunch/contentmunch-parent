@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-parent</artifactId>
-    <version>3.2.6.RELEASE</version>
+    <version>4.0.0.RELEASE</version>
     <name>contentmunch-parent</name>
     <description>Contentmunch parent pom</description>
     <url>https://github.com/contentmunch</url>
