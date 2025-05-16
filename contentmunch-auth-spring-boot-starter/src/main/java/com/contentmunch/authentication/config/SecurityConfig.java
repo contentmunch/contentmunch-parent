@@ -33,8 +33,9 @@ import lombok.NonNull;
 @EnableConfigurationProperties({AuthConfigProperties.class})
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, TokenizationService tokenizationService,
-                                           ContentmunchUserDetailsService userDetailsService, AuthConfigProperties authConfigProperties) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http,TokenizationService tokenizationService,
+            ContentmunchUserDetailsService userDetailsService,AuthConfigProperties authConfigProperties)
+            throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login","/api/auth/logout").permitAll()
@@ -51,7 +52,7 @@ public class SecurityConfig {
     }
 
     public OncePerRequestFilter jwtAuthFilter(TokenizationService tokenizationService,
-                                              ContentmunchUserDetailsService userDetailsService, AuthConfigProperties authConfig){
+            ContentmunchUserDetailsService userDetailsService,AuthConfigProperties authConfig){
         return new OncePerRequestFilter() {
 
             @Override

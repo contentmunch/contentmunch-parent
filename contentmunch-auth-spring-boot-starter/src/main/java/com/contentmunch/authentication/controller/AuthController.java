@@ -29,7 +29,7 @@ public class AuthController {
     private final TokenizationService tokenizationService;
 
     @PostMapping("/login")
-    public ResponseEntity<ContentmunchUser> login(@RequestBody AuthRequest authRequest, HttpServletResponse response){
+    public ResponseEntity<ContentmunchUser> login(@RequestBody AuthRequest authRequest,HttpServletResponse response){
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
 

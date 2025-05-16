@@ -13,7 +13,7 @@ import lombok.Builder;
 
 @Builder
 public record ContentmunchUser(String name, String email, Set<ContentmunchRole> roles, String username,
-                               @JsonIgnore String password) implements UserDetails {
+        @JsonIgnore String password) implements UserDetails {
 
     public ContentmunchUser {
         roles = roles == null ? Set.of() : Set.copyOf(roles);

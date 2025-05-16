@@ -33,8 +33,8 @@ class TokenizationServiceTest {
 
         tokenizationService = new TokenizationService(authConfig);
         tokenizationService.init();
-        user = ContentmunchUser.builder().name("John Doe").username("user1").email("john@example.com").password("password")
-                .roles(Set.of(ContentmunchRole.ROLE_USER)).build();
+        user = ContentmunchUser.builder().name("John Doe").username("user1").email("john@example.com")
+                .password("password").roles(Set.of(ContentmunchRole.ROLE_USER)).build();
     }
 
     @Test
