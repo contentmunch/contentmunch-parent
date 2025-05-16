@@ -1,0 +1,5 @@
+contentmunch:
+  auth:
+    cookie:
+      same-site: LAX
+      secure: false

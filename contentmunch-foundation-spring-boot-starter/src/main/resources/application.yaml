@@ -1,0 +1,18 @@
+contentmunch:
+  logging:
+    enabled: true
+  telemetry:
+    enabled: true
+otel:
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+  traces:
+    exporter: none
+
+spring:
+  profiles:
+    #    or use json-logging for logs to be serialized to json
+    active: json-logging
+

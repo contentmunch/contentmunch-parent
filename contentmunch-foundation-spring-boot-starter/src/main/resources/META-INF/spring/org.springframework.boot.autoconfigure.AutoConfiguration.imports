@@ -1,0 +1,4 @@
+com.contentmunch.foundation.telemetry.TelemetryAutoConfiguration
+com.contentmunch.foundation.logging.LoggingAutoConfiguration
+com.contentmunch.foundation.error.ExceptionHandlerAutoConfiguration
+com.contentmunch.foundation.threads.VirtualThreadAutoConfiguration

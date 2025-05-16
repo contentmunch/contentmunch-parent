@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.contentmunch</groupId>
+    <artifactId>contentmunch-bom</artifactId>
+    <version>1.13.0</version>
+    <packaging>pom</packaging>
+    <name>Contentmunch BOM</name>
+    <description>Bill of materials for Contentmunch libraries</description>
+    <url>https://github.com/contentmunch/contentmunch-parent/contentmunch-bom</url>
+    <licenses>
+        <license>
+            <name>License</name>
+            <url>https://github.com/contentmunch/contentmunch-parent/blob/main/LICENSE</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Contentmunch</name>
+            <email>mail@contentmunch.com</email>
+            <organization>Contentmunch</organization>
+            <organizationUrl>https://www.contentmunch.com</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/contentmunch/contentmunch-parent.git</connection>
+        <developerConnection>scm:git:ssh://github.com/contentmunch/contentmunch-parent.git</developerConnection>
+        <url>https://github.com/contentmunch/contentmunch-parent</url>
+    </scm>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.4.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.contentmunch</groupId>
+                <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
+                <version>1.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.contentmunch</groupId>
+                <artifactId>contentmunch-auth-spring-boot-starter</artifactId>
+                <version>1.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+            <!-- Implementation -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+
+            <!-- JSON serializer (uses Jackson) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+
+            <!-- OpenTelemetry SDK and HTTP instrumentation -->
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.hakky54</groupId>
+                <artifactId>logcaptor</artifactId>
+                <version>2.11.0</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.7</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.18.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

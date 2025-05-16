@@ -1,0 +1,28 @@
+contentmunch:
+  auth:
+    max-age-in-minutes: 30
+    secret: contentmunchcontentmunchcontentmunch!
+    cookie:
+      name: contentmunch
+      same-site: STRICT
+      secure: true
+      http-only: true
+      path: /
+    users:
+      contentmunch:
+        name: Contentmunch
+        username: contentmunch
+        email: mail@contentmunch.com
+        password: "{noop}password"
+        roles: ROLE_USER,ROLE_ADMIN
+  logging:
+    enabled: true
+  telemetry:
+    enabled: true
+otel:
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+  traces:
+    exporter: none

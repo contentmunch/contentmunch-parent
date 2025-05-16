@@ -1,0 +1,27 @@
+<configuration>
+
+    <!-- JSON Appender -->
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <!-- Plain Text Appender -->
+    <appender name="PLAIN" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.contentmunch" level="DEBUG"/>
+    <springProfile name="json-logging">
+        <root level="INFO">
+            <appender-ref ref="JSON"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!json-logging">
+        <root level="INFO">
+            <appender-ref ref="PLAIN"/>
+        </root>
+    </springProfile>
+</configuration>
