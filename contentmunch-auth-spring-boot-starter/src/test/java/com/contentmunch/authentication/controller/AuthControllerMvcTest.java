@@ -69,8 +69,10 @@ class AuthControllerMvcTest {
                 """;
 
         when(userDetailsService.loadUserByUsername("user")).thenReturn(contentmunchUser);
-        when(tokenizationService.generateToken(contentmunchUser)).thenReturn(jwt);
-        when(cookieService.cookieFromToken(jwt)).thenReturn(expectedCookie);
+        when(tokenizationService.generateAccessToken(contentmunchUser)).thenReturn(jwt);
+        when(tokenizationService.generateRefreshToken(contentmunchUser)).thenReturn(jwt);
+        when(cookieService.cookieFromAccessToken(jwt)).thenReturn(expectedCookie);
+        when(cookieService.cookieFromRefreshToken(jwt)).thenReturn(expectedCookie);
 
         mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(jsonBody))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.username").value("user"))
@@ -98,7 +100,7 @@ class AuthControllerMvcTest {
     void logout_shouldClearAuthCookie() throws Exception{
         var logoutCookie = ResponseCookie.from("contentmunch-auth","").maxAge(0).build();
 
-        when(cookieService.cookieFromToken("",0)).thenReturn(logoutCookie);
+        when(cookieService.cookieFromAccessToken("",0)).thenReturn(logoutCookie);
 
         mockMvc.perform(post("/api/auth/logout")).andExpect(status().isOk()).andExpect(content().string("Logged out"))
                 .andExpect(header().string(HttpHeaders.SET_COOKIE,

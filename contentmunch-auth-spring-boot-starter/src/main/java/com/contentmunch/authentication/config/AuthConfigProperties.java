@@ -11,8 +11,8 @@ import lombok.Getter;
 
 @ConfigurationProperties(prefix = "contentmunch.auth")
 @Builder
-public record AuthConfigProperties(int maxAgeInMinutes, String secret, CookieConfig cookie,
-        Map<String, ContentmunchUser> users) {
+public record AuthConfigProperties(int accessTokenMaxAgeInMinutes, int refreshTokenMaxAgeDays, String secret,
+        CookieConfig cookie, Map<String, ContentmunchUser> users) {
 
     public AuthConfigProperties {
         users = users == null ? Map.of() : Map.copyOf(users);

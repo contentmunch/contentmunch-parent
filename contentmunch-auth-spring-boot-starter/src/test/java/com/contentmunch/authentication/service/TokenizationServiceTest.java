@@ -25,7 +25,8 @@ class TokenizationServiceTest {
     @BeforeEach
     void setUp(){
         String secret = "a-very-secure-secret-key-12345678901234567890"; // 32+ chars for HS256
-        AuthConfigProperties authConfig = AuthConfigProperties.builder().maxAgeInMinutes(60).secret(secret)
+        AuthConfigProperties authConfig = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(60)
+                .refreshTokenMaxAgeDays(7).secret(secret)
                 .cookie(AuthConfigProperties.CookieConfig.builder().name("token")
                         .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX).secure(true).httpOnly(true).path("/")
                         .build())
@@ -39,7 +40,7 @@ class TokenizationServiceTest {
 
     @Test
     void shouldGenerateAndValidateTokenSuccessfully(){
-        String token = tokenizationService.generateToken(user);
+        String token = tokenizationService.generateAccessToken(user);
 
         assertThat(token).isNotNull();
         assertThat(tokenizationService.validateToken(token)).isTrue();
@@ -47,7 +48,7 @@ class TokenizationServiceTest {
 
     @Test
     void shouldExtractUsernameFromToken(){
-        String token = tokenizationService.generateToken(user);
+        String token = tokenizationService.generateAccessToken(user);
 
         String extractedUsername = tokenizationService.extractUsername(token);
 
@@ -69,8 +70,8 @@ class TokenizationServiceTest {
     }
 
     @Test
-    void shouldGenerateTokenWithExpiration(){
-        String token = tokenizationService.generateToken(user);
+    void shouldGenerateAccessTokenWithExpiration(){
+        String token = tokenizationService.generateAccessToken(user);
 
         var claims = io.jsonwebtoken.Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes())).build()
@@ -81,8 +82,8 @@ class TokenizationServiceTest {
 
     @Test
     void shouldFailValidationForExpiredToken(){
-        var expiredAuthConfig = AuthConfigProperties.builder().maxAgeInMinutes(-1) // already expired
-                .secret("a-very-secure-secret-key-12345678901234567890")
+        var expiredAuthConfig = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(-1) // already expired
+                .refreshTokenMaxAgeDays(7).secret("a-very-secure-secret-key-12345678901234567890")
                 .cookie(AuthConfigProperties.CookieConfig.builder().name("token")
                         .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX).secure(true).httpOnly(true).path("/")
                         .build())
@@ -90,14 +91,14 @@ class TokenizationServiceTest {
 
         TokenizationService expiredTokenService = new TokenizationService(expiredAuthConfig);
         expiredTokenService.init();
-        String token = expiredTokenService.generateToken(user);
+        String token = expiredTokenService.generateAccessToken(user);
 
         assertThat(expiredTokenService.validateToken(token)).isFalse();
     }
 
     @Test
     void shouldFailValidationForTamperedToken(){
-        String validToken = tokenizationService.generateToken(user);
+        String validToken = tokenizationService.generateAccessToken(user);
         String tamperedToken = validToken.substring(0,validToken.length() - 1) + "x"; // change last char
 
         assertThat(tokenizationService.validateToken(tamperedToken)).isFalse();
@@ -106,7 +107,7 @@ class TokenizationServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldContainCorrectClaimsInToken(){
-        String token = tokenizationService.generateToken(user);
+        String token = tokenizationService.generateAccessToken(user);
 
         var claims = io.jsonwebtoken.Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes())).build()

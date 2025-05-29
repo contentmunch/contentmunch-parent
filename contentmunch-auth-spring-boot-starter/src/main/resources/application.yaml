@@ -1,6 +1,7 @@
 contentmunch:
   auth:
-    max-age-in-minutes: 30
+    accessTokenMaxAgeInMinutes: 30
+    refreshTokenMaxAgeDays: 7
     secret: contentmunchcontentmunchcontentmunch!
     cookie:
       name: contentmunch

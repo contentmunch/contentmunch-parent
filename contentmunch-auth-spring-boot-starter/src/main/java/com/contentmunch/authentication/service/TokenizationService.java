@@ -34,15 +34,21 @@ public class TokenizationService {
         this.secretKey = Keys.hmacShaKeyFor(authConfig.secret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(final ContentmunchUser user){
+    public String generateAccessToken(final ContentmunchUser user){
         Instant now = Instant.now();
         return Jwts.builder().subject(user.getUsername()).claim("email",user.email()).claim("name",user.name())
                 .claim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(authConfig.maxAgeInMinutes(),ChronoUnit.MINUTES))).signWith(secretKey)
-                .compact();
+                .expiration(Date.from(now.plus(authConfig.accessTokenMaxAgeInMinutes(),ChronoUnit.MINUTES)))
+                .signWith(secretKey).compact();
     }
 
+    public String generateRefreshToken(final ContentmunchUser user){
+        Instant now = Instant.now();
+        return Jwts.builder().subject(user.getUsername()).claim("type","refresh").issuedAt(Date.from(now))
+                .expiration(Date.from(now.plus(authConfig.refreshTokenMaxAgeDays(),ChronoUnit.DAYS)))
+                .signWith(secretKey).compact();
+    }
     public boolean validateToken(final String token){
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
