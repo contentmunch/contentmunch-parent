@@ -17,6 +17,7 @@ public record AuthConfigProperties(int accessTokenMaxAgeInMinutes, int refreshTo
     public AuthConfigProperties {
         users = users == null ? Map.of() : Map.copyOf(users);
     }
+
     public static class AuthConfigPropertiesBuilder {
         public AuthConfigPropertiesBuilder users(Map<String, ContentmunchUser> users){
             this.users = users == null ? Map.of() : Map.copyOf(users);
@@ -25,7 +26,8 @@ public record AuthConfigProperties(int accessTokenMaxAgeInMinutes, int refreshTo
     }
 
     @Builder
-    public record CookieConfig(String name, SameSite sameSite, boolean secure, boolean httpOnly, String path) {
+    public record CookieConfig(String name, SameSite sameSite, boolean secure, boolean httpOnly, String path,
+            String refreshTokenPath) {
 
         @Getter
         public enum SameSite {

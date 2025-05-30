@@ -9,6 +9,7 @@ contentmunch:
       secure: true
       http-only: true
       path: /
+      refresh-token-path: /api/auth/refresh
     users:
       contentmunch:
         name: Contentmunch
