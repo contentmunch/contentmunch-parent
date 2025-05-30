@@ -20,7 +20,8 @@ public class CookieService {
     public ResponseCookie cookieFromAccessToken(String token,int maxAge){
         return ResponseCookie.from(authConfig.cookie().name(),token).httpOnly(authConfig.cookie().httpOnly())
                 .secure(authConfig.cookie().secure()).path(authConfig.cookie().path())
-                .maxAge(Duration.ofMinutes(maxAge)).sameSite(authConfig.cookie().sameSite().getValue()).build();
+                .domain(authConfig.cookie().domain()).maxAge(Duration.ofMinutes(maxAge))
+                .sameSite(authConfig.cookie().sameSite().getValue()).build();
     }
 
     public ResponseCookie cookieFromAccessToken(String token){
@@ -30,7 +31,7 @@ public class CookieService {
     public ResponseCookie cookieFromRefreshToken(String token){
         return ResponseCookie.from(String.format("%s-refresh_token",authConfig.cookie().name()),token)
                 .httpOnly(authConfig.cookie().httpOnly()).secure(authConfig.cookie().secure())
-                .path(authConfig.cookie().refreshTokenPath())
+                .path(authConfig.cookie().refreshTokenPath()).domain(authConfig.cookie().domain())
                 .maxAge(Duration.ofDays(authConfig.refreshTokenMaxAgeDays()))
                 .sameSite(authConfig.cookie().sameSite().getValue()).build();
     }

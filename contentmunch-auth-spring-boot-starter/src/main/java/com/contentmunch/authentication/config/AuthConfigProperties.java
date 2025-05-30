@@ -26,8 +26,8 @@ public record AuthConfigProperties(int accessTokenMaxAgeInMinutes, int refreshTo
     }
 
     @Builder
-    public record CookieConfig(String name, SameSite sameSite, boolean secure, boolean httpOnly, String path,
-            String refreshTokenPath) {
+    public record CookieConfig(String name, String domain, SameSite sameSite, boolean secure, boolean httpOnly,
+            String path, String refreshTokenPath) {
 
         @Getter
         public enum SameSite {

@@ -5,6 +5,7 @@ contentmunch:
     secret: contentmunchcontentmunchcontentmunch!
     cookie:
       name: contentmunch
+      domain: .contentmunch.com
       same-site: STRICT
       secure: true
       http-only: true
