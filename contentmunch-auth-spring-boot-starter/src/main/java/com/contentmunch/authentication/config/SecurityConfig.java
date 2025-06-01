@@ -75,8 +75,7 @@ public class SecurityConfig {
                 }
 
                 if (token != null && tokenizationService.validateToken(token)) {
-                    String username = tokenizationService.extractUsername(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UserDetails userDetails = tokenizationService.extractUser(token);
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
                             null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
