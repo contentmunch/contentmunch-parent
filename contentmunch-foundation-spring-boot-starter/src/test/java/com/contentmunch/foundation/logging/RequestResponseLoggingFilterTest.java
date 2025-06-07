@@ -136,7 +136,7 @@ class RequestResponseLoggingFilterTest {
             String invalidJson = "{\"username\": \"user1\", \"password\": ";
 
             mockMvc.perform(post("/api/dummy/logs").contentType(MediaType.APPLICATION_JSON).content(invalidJson))
-                    .andExpect(status().is5xxServerError());
+                    .andExpect(status().is4xxClientError());
 
             logs = logCaptor.getInfoLogs();
         }
