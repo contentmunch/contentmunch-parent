@@ -102,5 +102,4 @@ public class AuthController {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
     }
-
 }

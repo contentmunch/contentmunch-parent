@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-bom</artifactId>
-    <version>7.12.0</version>
+    <version>7.13.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch BOM</name>
     <description>Bill of materials for Contentmunch libraries</description>
@@ -40,7 +40,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.4.4</version>
+                <version>3.5.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -54,12 +54,12 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
-                <version>7.12.0</version>
+                <version>7.13.0</version>
             </dependency>
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-auth-spring-boot-starter</artifactId>
-                <version>7.12.0</version>
+                <version>7.13.0</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>

@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter(tokenizationService,userDetailsService,authConfigProperties),
                         UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
 
     }
