@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-parent</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch parent POM</name>
     <description>Contentmunch parent pom</description>
@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-bom</artifactId>
-                <version>1.2.0</version>
+                <version>1.3.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
