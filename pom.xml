@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-parent</artifactId>
-    <version>7.13.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch parent POM</name>
     <description>Contentmunch parent pom</description>
@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-bom</artifactId>
-                <version>7.13.0</version>
+                <version>1.1.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -85,17 +85,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
-
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.7.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>central</publishingServerId>
-                    <autoPublish>true</autoPublish>
-                </configuration>
-            </plugin>
+            <!-- Attach source jars -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -109,6 +99,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Attach javadoc jars -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -119,20 +111,6 @@
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.7</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -200,5 +178,11 @@
             </build>
         </profile>
     </profiles>
+    <distributionManagement>
+        <repository>
+            <id>nexus-release</id>
+            <url>https://nexus.contentmunch.com/repository/maven-release/</url>
+        </repository>
+    </distributionManagement>
 </project>
 

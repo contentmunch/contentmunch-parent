@@ -7,7 +7,7 @@ BOM_COORDINATES="com.contentmunch:contentmunch-bom"
 
 # Step 1: Verify the build
 echo "🛠️ Verifying build with quality profile..."
-mvn -B verify -Pquality -Dgpg.skip=true
+mvn -B verify -Pquality
 
 # Step 2: Bump minor version
 echo "🔢 Bumping minor version..."
@@ -42,8 +42,8 @@ echo "📦 Committing with message: $COMMIT_MSG"
 git commit -am "$COMMIT_MSG"
 git push origin main
 
-# Step 5: Deploy to Sonatype
-echo "🚀 Deploying to Sonatype..."
+# Step 5: Deploy to Nexus
+echo "🚀 Deploying to Nexus..."
 mvn deploy -DskipTests
 
 echo "🎉 Release complete: $NEW_VERSION"
