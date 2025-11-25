@@ -44,7 +44,12 @@ git push origin main
 
 # Step 5: Deploy to Nexus
 echo "🚀 Deploying to Nexus..."
-mvn deploy -DskipTests
+
+# Deploy BOM first
+mvn deploy -pl contentmunch-bom -DskipTests
+
+# Deploy everything else
+mvn deploy -pl !contentmunch-bom -DskipTests
 
 echo "🎉 Release complete: $NEW_VERSION"
 

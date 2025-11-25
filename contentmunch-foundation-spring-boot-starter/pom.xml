@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.contentmunch</groupId>
         <artifactId>contentmunch-parent</artifactId>
-        <version>1.3.0</version>
+        <version>1.1.0</version>
     </parent>
     <name>Contentmunch Foundation Starter</name>
     <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
