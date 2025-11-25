@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.contentmunch</groupId>
         <artifactId>contentmunch-parent</artifactId>
-        <version>7.13.0</version>
+        <version>1.1.0</version>
     </parent>
     <name>Contentmunch Foundation Starter</name>
     <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
@@ -19,6 +19,17 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <!-- Actuator for metrics and health endpoints -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Micrometer Prometheus registry -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
         <!-- OpenTelemetry SDK and HTTP instrumentation -->
         <dependency>

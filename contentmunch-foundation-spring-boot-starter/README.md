@@ -28,7 +28,40 @@ A foundational Spring Boot starter module for all `contentmunch-*` projects, pro
 - Baggage and context propagation via Spring filters
 - Support for exporting spans to a tracing backend (e.g. Jaeger, OTEL Collector)
 
----
+#### Telemetry architecture
+
+```
+                          ┌──────────────────────────┐
+                          │        Grafana           │
+                          │   (Dashboards + Explore) │
+                          └────────────┬─────────────┘
+                                       │
+             ┌─────────────────────────┼─────────────────────────┐
+             │                         │                         │
+             ▼                         ▼                         ▼
+┌────────────────┐        ┌─────────────────────┐     ┌──────────────────┐
+│   Prometheus   │        │ Grafana Tempo/Jaeger│     │  Alertmanager    │
+│ (Time-series   │        │   (Trace Storage)   │     │ (Alert Routing)  │
+│   Metrics DB)  │        └───────────┬─────────┘     └─────────┬────────┘
+└────────┬───────┘                    │                         │
+         │                            │                         │
+┌────────┴────────────┐        ┌──────┴─────────────┐           │
+│ Prometheus Scrape   │        │ OTel Collector     │           │
+│ /actuator/prometheus│        │  (OTLP Receiver)   │           │
+└────────────┬────────┘        └─────────┬──────────┘           │
+             │                           │                      │
+┌────────────┼───────────────────────────┼──────────────────────┘
+│            │                           │
+▼            ▼                           ▼
+┌────────────────────────────┐   ┌────────────────────────────┐
+│ Spring Boot App A          │   │ Spring Boot App B          │
+│ - Micrometer +             │   │ - Micrometer +             │
+│   Prometheus               │   │   Prometheus               │
+│ - OTel SDK                 │   │ - OTel SDK                 │
+│ - /actuator/prometheus     │   │ - /actuator/prometheus     │
+│ - Trace Context Propagation│   │ - Trace Context Propagation│
+└────────────────────────────┘   └────────────────────────────┘
+```
 
 ## Getting Started
 
