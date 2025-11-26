@@ -9,7 +9,7 @@
 This project defines a parent POM for the contentmunch ecosystem, providing:
 
 - Centralized dependency management via BOMs.
-- Shared plugin configuration (compiler, source, javadoc, GPG signing).
+- Shared plugin configuration (compiler, source, javadoc).
 - Modules support.
 - Java 21 compatibility.
 
@@ -38,7 +38,6 @@ This gives your project:
 * Automatic source/javadoc jars
 * GPG signing support
 * Plugin configurations
-* Compatibility with Maven Central publishing (via Sonatype)
 
 ## Dependency Management
 
