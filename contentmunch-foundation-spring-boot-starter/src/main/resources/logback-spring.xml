@@ -27,6 +27,7 @@
     <springProfile name="loki-logging">
         <root level="INFO">
             <appender-ref ref="LOKI"/>
+            <appender-ref ref="PLAIN"/>
         </root>
     </springProfile>
 

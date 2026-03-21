@@ -20,4 +20,4 @@ logging:
   loki:
     url: http://loki.contentmunch.com
     app-name: ${spring.application.name:unknown-app}
-    environment: ${spring.profiles.active:prod}
+    environment: prod
