@@ -1,5 +1,6 @@
 package com.contentmunch.foundation.logging.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record LokiStreams(List<LokiEntry> streams) {
@@ -8,6 +9,13 @@ public record LokiStreams(List<LokiEntry> streams) {
     }
 
     public static LokiStreams from(LokiStream lokiStream,List<LokiLog> lokiLogs){
-        return new LokiStreams(List.of(new LokiEntry(lokiStream, lokiLogs)));
+        List<LokiEntry> streams = new ArrayList<>();
+        lokiLogs.forEach(lokiLog -> {
+            var log = new ArrayList<String>();
+            log.add(lokiLog.timestamp());
+            log.add(lokiLog.log());
+            streams.add(new LokiEntry(lokiStream, List.of(log)));
+        });
+        return new LokiStreams(streams);
     }
 }

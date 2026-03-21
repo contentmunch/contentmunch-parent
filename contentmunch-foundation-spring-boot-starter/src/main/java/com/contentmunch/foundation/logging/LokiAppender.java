@@ -1,7 +1,6 @@
 package com.contentmunch.foundation.logging;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -56,7 +55,7 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent loggingEvent){
-        var lokiLog = LokiLog.builder().timestamp(Instant.ofEpochMilli(loggingEvent.getTimeStamp()).toString())
+        var lokiLog = LokiLog.builder().timestamp(String.valueOf(loggingEvent.getNanoseconds()))
                 .log(loggingEvent.getFormattedMessage()).build();
 
         if (!logsQueue.offer(lokiLog)) {
