@@ -1,6 +1,6 @@
 package com.contentmunch.foundation.threads;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(name = "virtualThreadExecutor")
 public class VirtualThreadAutoConfiguration {
     @Bean
-    public Executor virtualThreadExecutor(){
+    public ExecutorService virtualThreadExecutor(){
         return Executors.newVirtualThreadPerTaskExecutor();
     }
 }
