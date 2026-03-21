@@ -13,6 +13,11 @@ otel:
 
 spring:
   profiles:
-    #    or use json-logging for logs to be serialized to json
-    active: json-logging
+    #    use- loki-logging for logging to loki, or use text-logging
+    active: text-logging
 
+logging:
+  loki:
+    url: http://loki.contentmunch.com
+    app-name: ${spring.application.name:unknown-app}
+    environment: ${spring.profiles.active:prod}

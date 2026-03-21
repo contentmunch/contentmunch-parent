@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-bom</artifactId>
-    <version>2.2.0</version>
+    <version>2.3.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch BOM</name>
     <description>Bill of materials for Contentmunch libraries</description>
@@ -54,12 +54,12 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
-                <version>2.2.0</version>
+                <version>2.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-auth-spring-boot-starter</artifactId>
-                <version>2.2.0</version>
+                <version>2.3.0</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
@@ -71,6 +71,23 @@
                 <artifactId>spotbugs-annotations</artifactId>
                 <version>4.9.3.0</version>
             </dependency>
+            <!-- Resilience4j related -->
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-ratelimiter</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-retry</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-circuitbreaker</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+
             <!-- Implementation -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>

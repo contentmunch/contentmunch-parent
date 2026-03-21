@@ -1,8 +1,16 @@
 <configuration>
 
-    <!-- JSON Appender -->
-    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    <springProperty scope="context" name="lokiUrl" source="logging.loki.url"/>
+    <springProperty scope="context" name="appName" source="logging.loki.app-name"/>
+    <springProperty scope="context" name="environment" source="logging.loki.environment"/>
+    <springProperty scope="context" name="username" source="logging.loki.username"/>
+    <springProperty scope="context" name="password" source="logging.loki.password"/>
+
+    <!-- Loki Appender -->
+    <appender name="LOKI" class="com.contentmunch.foundation.logging.LokiAppender">
+        <lokiUrl>${lokiUrl}</lokiUrl>
+        <appName>${appName}</appName>
+        <environment>${environment}</environment>
     </appender>
 
     <!-- Plain Text Appender -->
@@ -11,17 +19,25 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <root level="INFO">
+        <appender-ref ref="PLAIN"/>
+    </root>
 
     <logger name="com.contentmunch" level="DEBUG"/>
-    <springProfile name="json-logging">
+    <springProfile name="loki-logging">
         <root level="INFO">
-            <appender-ref ref="JSON"/>
+            <appender-ref ref="LOKI"/>
         </root>
     </springProfile>
 
-    <springProfile name="!json-logging">
+    <springProfile name="!loki-logging">
         <root level="INFO">
             <appender-ref ref="PLAIN"/>
         </root>
     </springProfile>
+
+    <logger name="LOKI_FALLBACK" level="WARN" additivity="false">
+        <appender-ref ref="PLAIN"/>
+    </logger>
+
 </configuration>
