@@ -55,8 +55,8 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent loggingEvent){
-        var lokiLog = LokiLog.builder().timestamp(String.valueOf(loggingEvent.getNanoseconds()))
-                .log(loggingEvent.getFormattedMessage()).build();
+        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(loggingEvent.getFormattedMessage())
+                .build();
 
         if (!logsQueue.offer(lokiLog)) {
             fallbackLogger.warn("Queue full, dropping log: {}",lokiLog.log());

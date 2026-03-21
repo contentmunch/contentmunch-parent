@@ -12,7 +12,9 @@ public record LokiStreams(List<LokiEntry> streams) {
         List<LokiEntry> streams = new ArrayList<>();
         lokiLogs.forEach(lokiLog -> {
             var log = new ArrayList<String>();
-            log.add(lokiLog.timestamp());
+            var nanos = lokiLog.timestamp() * 1_000_000;
+
+            log.add(String.valueOf(nanos));
             log.add(lokiLog.log());
             streams.add(new LokiEntry(lokiStream, List.of(log)));
         });
