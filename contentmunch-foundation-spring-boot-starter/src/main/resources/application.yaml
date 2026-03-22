@@ -21,3 +21,6 @@ logging:
     url: http://loki.contentmunch.com
     app-name: ${spring.application.name:unknown-app}
     environment: prod
+    username: loki
+    password: loki-Palto
+

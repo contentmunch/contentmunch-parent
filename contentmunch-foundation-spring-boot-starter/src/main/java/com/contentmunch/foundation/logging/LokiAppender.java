@@ -35,6 +35,8 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
     private String lokiUrl;
     private String appName;
     private String environment;
+    private String username;
+    private String password;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -123,6 +125,7 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
 
             var headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBasicAuth(username,password);
             HttpEntity<String> entity = new HttpEntity<>(payload, headers);
 
             restTemplate.postForEntity(lokiUrl,entity,String.class);

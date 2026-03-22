@@ -11,6 +11,8 @@
         <lokiUrl>${lokiUrl}</lokiUrl>
         <appName>${appName}</appName>
         <environment>${environment}</environment>
+        <username>${username}</username>
+        <password>${password}</password>
     </appender>
 
     <!-- Plain Text Appender -->
