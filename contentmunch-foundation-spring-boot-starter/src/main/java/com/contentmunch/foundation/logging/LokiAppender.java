@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,8 +129,13 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
             headers.setBasicAuth(username,password);
             HttpEntity<String> entity = new HttpEntity<>(payload, headers);
 
+            fallbackLogger.info("Sending logs to Loki");
             restTemplate.postForEntity(lokiUrl,entity,String.class);
 
+        } catch (HttpServerErrorException.BadGateway e) {
+            // Ignore 502 specifically
+            fallbackLogger
+                    .info("LokiAppender received 502 Bad Gateway. Ignoring since logs may have reached the server.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
