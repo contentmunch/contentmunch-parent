@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-bom</artifactId>
-    <version>2.12.0</version>
+    <version>2.13.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch BOM</name>
     <description>Bill of materials for Contentmunch libraries</description>
@@ -54,12 +54,12 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
-                <version>2.12.0</version>
+                <version>2.13.0</version>
             </dependency>
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-auth-spring-boot-starter</artifactId>
-                <version>2.12.0</version>
+                <version>2.13.0</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
@@ -70,13 +70,6 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
                 <version>4.9.3.0</version>
-            </dependency>
-
-            <!-- Markdown parsing -->
-            <dependency>
-                <groupId>com.vladsch.flexmark</groupId>
-                <artifactId>flexmark-all</artifactId>
-                <version>0.64.8</version>
             </dependency>
 
             <!-- Resilience4j related -->
