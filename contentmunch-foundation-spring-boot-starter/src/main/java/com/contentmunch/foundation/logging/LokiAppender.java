@@ -22,6 +22,7 @@ import com.contentmunch.foundation.logging.data.LokiStreams;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.AppenderBase;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -60,29 +61,22 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent loggingEvent){
 
+        // 1. Start with the regular message (works for INFO, DEBUG, etc.)
         StringBuilder logBuilder = new StringBuilder(loggingEvent.getFormattedMessage());
 
         IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();
+
+        // 2. If it's an ERROR/WARN with an exception, add the extra context
         if (throwableProxy != null) {
-            logBuilder.append(" - ");
-            appendThrowableMessage(logBuilder,throwableProxy);
+            logBuilder.append("\n").append(ThrowableProxyUtil.asString(throwableProxy));
         }
 
-        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(loggingEvent.getFormattedMessage())
-                .build();
+        // 3. This 'logBuilder.toString()' now holds either the plain message
+        // OR the message + stack trace.
+        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(logBuilder.toString()).build();
 
         if (!logsQueue.offer(lokiLog)) {
             fallbackLogger.warn("Queue full, dropping log: {}",lokiLog.log());
-        }
-    }
-
-    private void appendThrowableMessage(StringBuilder sb,IThrowableProxy proxy){
-        sb.append(proxy.getClassName()).append(": ").append(proxy.getMessage());
-
-        IThrowableProxy cause = proxy.getCause();
-        if (cause != null) {
-            sb.append(" | caused by: ");
-            appendThrowableMessage(sb,cause);
         }
     }
 
