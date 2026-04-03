@@ -3,6 +3,7 @@ package com.contentmunch.foundation.logging;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import org.slf4j.Logger;
@@ -61,19 +62,19 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent loggingEvent){
 
-        // 1. Start with the regular message (works for INFO, DEBUG, etc.)
         StringBuilder logBuilder = new StringBuilder(loggingEvent.getFormattedMessage());
 
-        IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();
+        Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
+        String traceId = mdc.get("traceId");
+        String spanId = mdc.get("spanId");
 
-        // 2. If it's an ERROR/WARN with an exception, add the extra context
+        IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();
         if (throwableProxy != null) {
             logBuilder.append("\n").append(ThrowableProxyUtil.asString(throwableProxy));
         }
 
-        // 3. This 'logBuilder.toString()' now holds either the plain message
-        // OR the message + stack trace.
-        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(logBuilder.toString()).build();
+        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(logBuilder.toString()).spanId(spanId)
+                .traceId(traceId).build();
 
         if (!logsQueue.offer(lokiLog)) {
             fallbackLogger.warn("Queue full, dropping log: {}",lokiLog.log());
