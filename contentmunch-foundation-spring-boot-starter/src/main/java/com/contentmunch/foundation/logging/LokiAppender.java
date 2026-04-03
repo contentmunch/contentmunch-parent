@@ -8,6 +8,7 @@ import java.util.concurrent.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -65,6 +66,10 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
         StringBuilder logBuilder = new StringBuilder(loggingEvent.getFormattedMessage());
 
         Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
+        if (mdc == null || mdc.isEmpty()) {
+            mdc = MDC.getCopyOfContextMap();
+        }
+
         String traceId = mdc != null ? mdc.get("traceId") : null;
         String spanId = mdc != null ? mdc.get("spanId") : null;
 
