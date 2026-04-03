@@ -65,8 +65,8 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
         StringBuilder logBuilder = new StringBuilder(loggingEvent.getFormattedMessage());
 
         Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
-        String traceId = mdc.get("traceId");
-        String spanId = mdc.get("spanId");
+        String traceId = mdc != null ? mdc.get("traceId") : null;
+        String spanId = mdc != null ? mdc.get("spanId") : null;
 
         IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();
         if (throwableProxy != null) {
