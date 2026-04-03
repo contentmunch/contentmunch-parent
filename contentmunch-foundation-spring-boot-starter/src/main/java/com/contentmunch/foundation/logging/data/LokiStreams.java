@@ -16,9 +16,8 @@ public record LokiStreams(List<LokiEntry> streams) {
 
             log.add(String.valueOf(nanos));
             log.add(lokiLog.log());
-            log.add(lokiLog.traceId());
-            log.add(lokiLog.spanId());
-            streams.add(new LokiEntry(lokiStream, List.of(log)));
+            streams.add(new LokiEntry(LokiStream.builder().app(lokiStream.app()).environment(lokiStream.environment())
+                    .traceId(lokiLog.traceId()).spanId(lokiLog.spanId()).build(), List.of(log)));
         });
         return new LokiStreams(streams);
     }
