@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -44,7 +45,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException{
 
-        String traceId = Span.current().getSpanContext().getTraceId();
+        var currentSpan = Span.current().getSpanContext();
+        String traceId = currentSpan.getTraceId();
+        String spanId = currentSpan.getSpanId();
+        response.setHeader("X-Trace-Id",traceId);
 
         LOG.info("Request Started: {} {} [traceId={}]",request.getMethod(),request.getRequestURI(),traceId);
 
@@ -53,10 +57,25 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
         try {
             filterChain.doFilter(wrappedRequest,wrappedResponse);
+        } catch (Exception e) {
+            // 2. IMPORTANT: Put IDs back into MDC manually for the exception log
+            try (var ignored = MDC.putCloseable("traceId",traceId)) {
+                MDC.put("spanId",spanId);
+                LOG.error("Unhandled exception: ",e);
+            }
+            throw e;
         } finally {
-            logRequest(wrappedRequest);
-            logResponse(wrappedResponse);
-            wrappedResponse.copyBodyToResponse();
+            // 3. Ensure MDC is populated for the final request/reponse logs
+            MDC.put("traceId",traceId);
+            MDC.put("spanId",spanId);
+            try {
+                logRequest(wrappedRequest);
+                logResponse(wrappedResponse);
+                wrappedResponse.copyBodyToResponse();
+            } finally {
+                MDC.remove("traceId");
+                MDC.remove("spanId");
+            }
         }
     }
 
