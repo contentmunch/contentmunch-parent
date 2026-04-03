@@ -42,41 +42,58 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilterErrorDispatch(){
+        return false;
+    }
+
+    @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException{
 
-        var currentSpan = Span.current().getSpanContext();
-        String traceId = currentSpan.getTraceId();
-        String spanId = currentSpan.getSpanId();
-        response.setHeader("X-Trace-Id",traceId);
+        // 1. Snapshot the context IMMEDIATELY while it is still healthy
+        Map<String, String> contextSnapshot = MDC.getCopyOfContextMap();
+        String traceId = Span.current().getSpanContext().getTraceId();
+        String spanId = Span.current().getSpanContext().getSpanId();
 
-        LOG.info("Request Started: {} {} [traceId={}]",request.getMethod(),request.getRequestURI(),traceId);
+        // 2. Tag the response for the UI
+        if (traceId != null && !traceId.startsWith("000")) {
+            response.setHeader("X-Trace-Id",traceId);
+        }
 
         var wrappedRequest = new ContentCachingRequestWrapper(request);
         var wrappedResponse = new ContentCachingResponseWrapper(response);
 
         try {
+            // Log start using the captured ID
+            LOG.info("Request Started: {} {}",request.getMethod(),request.getRequestURI());
             filterChain.doFilter(wrappedRequest,wrappedResponse);
         } catch (Exception e) {
-            // 2. IMPORTANT: Put IDs back into MDC manually for the exception log
-            try (var ignored = MDC.putCloseable("traceId",traceId)) {
-                MDC.put("spanId",spanId);
-                LOG.error("Unhandled exception: ",e);
-            }
+            // 3. Manually restore MDC so the LokiAppender can see the labels for the error log
+            restoreMdc(contextSnapshot,traceId,spanId);
+            LOG.error("Exception in request: {}",e.getMessage(),e);
             throw e;
         } finally {
-            // 3. Ensure MDC is populated for the final request/reponse logs
-            MDC.put("traceId",traceId);
-            MDC.put("spanId",spanId);
+            // 4. Manually restore MDC for the final logging calls
+            restoreMdc(contextSnapshot,traceId,spanId);
             try {
                 logRequest(wrappedRequest);
                 logResponse(wrappedResponse);
                 wrappedResponse.copyBodyToResponse();
             } finally {
-                MDC.remove("traceId");
-                MDC.remove("spanId");
+                MDC.clear(); // Safety cleanup
             }
         }
+    }
+
+    private void restoreMdc(Map<String, String> snapshot,String traceId,String spanId){
+        if (snapshot != null) {
+            MDC.setContextMap(snapshot);
+        }
+        // Force set in case snapshot was empty
+        if (traceId != null)
+            MDC.put("traceId",traceId);
+        if (spanId != null)
+            MDC.put("spanId",spanId);
     }
 
     private void logRequest(ContentCachingRequestWrapper request){
