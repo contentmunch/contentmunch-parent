@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.opentelemetry.api.trace.Span;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,11 +44,23 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException{
 
+        String traceId = Span.current().getSpanContext().getTraceId();
+
+        if (traceId != null && !traceId.equals("00000000000000000000000000000000")) {
+            response.setHeader("X-Trace-Id",traceId);
+        }
+
         var wrappedRequest = new ContentCachingRequestWrapper(request);
         var wrappedResponse = new ContentCachingResponseWrapper(response);
 
+        LOG.info("Request Started: {} {}",request.getMethod(),request.getRequestURI());
+
         try {
             filterChain.doFilter(wrappedRequest,wrappedResponse);
+        } catch (Exception e) {
+
+            LOG.error("Error processing request: {}",e.getMessage(),e);
+            throw e;
         } finally {
             logRequest(wrappedRequest);
             logResponse(wrappedResponse);
