@@ -32,11 +32,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ContentmunchUser> login(@RequestBody AuthRequest authRequest,HttpServletResponse response){
-        authenticationManager
+        var authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
 
-        var userDetails = userDetailsService.loadUserByUsername(authRequest.username());
-        if (userDetails instanceof ContentmunchUser contentmunchUser) {
+        var authenticatedUser = authentication.getPrincipal();
+        if (authenticatedUser instanceof ContentmunchUser contentmunchUser) {
             // Generate tokens
             String accessToken = tokenizationService.generateAccessToken(contentmunchUser);
             String refreshToken = tokenizationService.generateRefreshToken(contentmunchUser);

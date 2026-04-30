@@ -79,9 +79,9 @@ class SecurityConfigTest {
 
     @Test
     void meShouldReturnUserWithValidToken() throws Exception{
-        String token = tokenizationService.generateAccessToken(
-                ContentmunchUser.builder().username("testuser").password("password").name("Contentmunch")
-                        .email("mail@contentmunch.com").roles(Set.of(ContentmunchRole.ROLE_USER)).build());
+        String token = tokenizationService.generateAccessToken(ContentmunchUser.builder().id(1L).enabled(true)
+                .username("testuser").password("password").name("Contentmunch").email("mail@contentmunch.com")
+                .roles(Set.of(ContentmunchRole.ROLE_USER)).build());
 
         mockMvc.perform(get("/api/auth/me").header(HttpHeaders.AUTHORIZATION,"Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.username").value("testuser"))
