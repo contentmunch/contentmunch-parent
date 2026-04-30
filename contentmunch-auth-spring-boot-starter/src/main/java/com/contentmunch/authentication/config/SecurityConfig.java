@@ -18,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.contentmunch.authentication.service.ContentmunchUserDetailsService;
 import com.contentmunch.authentication.service.TokenizationService;
 
 import jakarta.servlet.FilterChain;
@@ -32,13 +31,12 @@ import lombok.NonNull;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,TokenizationService tokenizationService,
-            ContentmunchUserDetailsService userDetailsService,AuthConfigProperties authConfigProperties)
-            throws Exception{
+            AuthConfigProperties authConfigProperties) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login","/api/auth/logout").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter(tokenizationService,userDetailsService,authConfigProperties),
+                .addFilterBefore(jwtAuthFilter(tokenizationService,authConfigProperties),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -50,8 +48,7 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    public OncePerRequestFilter jwtAuthFilter(TokenizationService tokenizationService,
-            ContentmunchUserDetailsService userDetailsService,AuthConfigProperties authConfig){
+    public OncePerRequestFilter jwtAuthFilter(TokenizationService tokenizationService,AuthConfigProperties authConfig){
         return new OncePerRequestFilter() {
 
             @Override
