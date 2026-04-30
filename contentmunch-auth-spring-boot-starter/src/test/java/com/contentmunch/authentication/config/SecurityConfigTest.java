@@ -24,9 +24,9 @@ import com.contentmunch.authentication.service.TokenizationService;
         "contentmunch.auth.cookie.name=token", "contentmunch.auth.cookie.same-site=LAX",
         "contentmunch.auth.cookie.secure=false", "contentmunch.auth.cookie.http-only=false",
         "contentmunch.auth.cookie.path=/", "contentmunch.auth.users.testuser.name=Contentmunch",
-        "contentmunch.auth.users.testuser.username=testuser",
+        "contentmunch.auth.users.testuser.id=1", "contentmunch.auth.users.testuser.username=testuser",
         "contentmunch.auth.users.testuser.email=mail@contentmunch.com",
-        "contentmunch.auth.users.testuser.password={noop}password",
+        "contentmunch.auth.users.testuser.password={noop}password", "contentmunch.auth.users.testuser.enabled=true",
         "contentmunch.auth.users.testuser.roles=ROLE_USER,ROLE_ADMIN"})
 @AutoConfigureMockMvc
 class SecurityConfigTest {

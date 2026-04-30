@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 
 @Builder
-public record ContentmunchUser(String name, String email, Set<ContentmunchRole> roles, String username,
-        @JsonIgnore String password) implements UserDetails {
+public record ContentmunchUser(Long id, String name, String email, Set<ContentmunchRole> roles, String username,
+        @JsonIgnore String password, boolean enabled) implements UserDetails {
 
     public ContentmunchUser {
         roles = roles == null ? Set.of() : Set.copyOf(roles);
@@ -44,12 +44,12 @@ public record ContentmunchUser(String name, String email, Set<ContentmunchRole> 
 
     @Override
     public boolean isAccountNonExpired(){
-        return true;
+        return enabled;
     }
 
     @Override
     public boolean isAccountNonLocked(){
-        return true;
+        return enabled;
     }
 
     @Override
@@ -59,7 +59,6 @@ public record ContentmunchUser(String name, String email, Set<ContentmunchRole> 
 
     @Override
     public boolean isEnabled(){
-        return true;
+        return enabled;
     }
-
 }

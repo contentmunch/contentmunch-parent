@@ -13,11 +13,13 @@ contentmunch:
       refresh-token-path: /api/auth/refresh
     users:
       contentmunch:
+        id: 1
         name: Contentmunch
         username: contentmunch
         email: mail@contentmunch.com
         password: "{noop}password"
         roles: ROLE_USER,ROLE_ADMIN
+        enabled: true
   logging:
     enabled: true
   telemetry:
