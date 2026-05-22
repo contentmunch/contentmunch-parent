@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-bom</artifactId>
-    <version>3.8.0</version>
+    <version>3.9.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch BOM</name>
     <description>Bill of materials for Contentmunch libraries</description>
@@ -61,12 +61,12 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-foundation-spring-boot-starter</artifactId>
-                <version>3.8.0</version>
+                <version>3.9.0</version>
             </dependency>
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-auth-spring-boot-starter</artifactId>
-                <version>3.8.0</version>
+                <version>3.9.0</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
@@ -143,6 +143,13 @@
                 <artifactId>logcaptor</artifactId>
                 <version>2.11.0</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Astronomy -->
+            <dependency>
+                <groupId>io.github.cosinekitty</groupId>
+                <artifactId>astronomy</artifactId>
+                <version>2.1.19</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
