@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.contentmunch</groupId>
     <artifactId>contentmunch-parent</artifactId>
-    <version>3.11.0</version>
+    <version>3.13.0</version>
     <packaging>pom</packaging>
     <name>Contentmunch parent POM</name>
     <description>Contentmunch parent pom</description>
@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>com.contentmunch</groupId>
                 <artifactId>contentmunch-bom</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -56,24 +56,22 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>net.revelc.code.formatter</groupId>
-                    <artifactId>formatter-maven-plugin</artifactId>
-                    <version>2.26.0</version>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>2.43.0</version>
                     <configuration>
-                        <!--suppress UnresolvedMavenProperty -->
-                        <configFile>${session.topLevelProject.basedir}/.build-config/formatter.xml</configFile>
-                        <encoding>UTF-8</encoding>
-                        <lineEnding>LF</lineEnding>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>net.revelc.code</groupId>
-                    <artifactId>impsort-maven-plugin</artifactId>
-                    <version>1.12.0</version>
-                    <configuration>
-                        <groups>java.,javax.,org.,com.,com.contentmunch.,</groups>
-                        <staticGroups>java,*</staticGroups>
-                        <removeUnused>true</removeUnused>
+                        <java>
+                            <palantirJavaFormat>
+                                <version>2.50.0</version>
+                                <style>PALANTIR</style>
+                            </palantirJavaFormat>
+                            <importOrder>
+                                <order>jakarta,java,javax,lombok,org,com,com.contentmunch,</order>
+                            </importOrder>
+                            <removeUnusedImports/>
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                        </java>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -124,33 +122,17 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>net.revelc.code.formatter</groupId>
-                        <artifactId>formatter-maven-plugin</artifactId>
+                        <groupId>com.diffplug.spotless</groupId>
+                        <artifactId>spotless-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>format-code</id>
                                 <phase>validate</phase>
                                 <goals>
-                                    <goal>format</goal>
+                                    <goal>apply</goal>  <!-- or 'check' for CI -->
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <!-- Import Sort Plugin -->
-                    <plugin>
-                        <groupId>net.revelc.code</groupId>
-                        <artifactId>impsort-maven-plugin</artifactId>
-
-                        <executions>
-                            <execution>
-                                <id>sort-imports</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>sort</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-
                     </plugin>
 
                     <!-- SpotBugs Plugin -->

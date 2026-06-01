@@ -6,7 +6,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 public class VirtualThreadEnabler implements EnvironmentPostProcessor {
     @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment,SpringApplication application){
-        environment.getSystemProperties().putIfAbsent("spring.threads.virtual.enabled","true");
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        environment.getSystemProperties().putIfAbsent("spring.threads.virtual.enabled", "true");
     }
 }

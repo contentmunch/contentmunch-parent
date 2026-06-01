@@ -27,9 +27,10 @@ class TelemetryHeaderFilterTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddTelemetryHeaders() throws Exception{
+    void shouldAddTelemetryHeaders() throws Exception {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().build();
-        OpenTelemetry openTelemetry = OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
+        OpenTelemetry openTelemetry =
+                OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
 
         Tracer tracer = openTelemetry.getTracer("test");
 
@@ -37,10 +38,12 @@ class TelemetryHeaderFilterTest {
         Span span = tracer.spanBuilder("test-span").startSpan();
 
         try (Scope ignored = span.makeCurrent()) {
-            mockMvc.perform(get("/dummy/telemetry/ok")).andExpect(status().isOk())
-                    .andExpect(header().exists("X-Trace-Id")).andExpect(header().exists("X-Span-Id"))
-                    .andExpect(header().string("X-Trace-Id",not(emptyOrNullString())))
-                    .andExpect(header().string("X-Span-Id",not(emptyOrNullString())));
+            mockMvc.perform(get("/dummy/telemetry/ok"))
+                    .andExpect(status().isOk())
+                    .andExpect(header().exists("X-Trace-Id"))
+                    .andExpect(header().exists("X-Span-Id"))
+                    .andExpect(header().string("X-Trace-Id", not(emptyOrNullString())))
+                    .andExpect(header().string("X-Span-Id", not(emptyOrNullString())));
         } finally {
             span.end();
         }

@@ -15,5 +15,4 @@ public abstract class BaseException extends RuntimeException {
         super(cause);
         this.errorMessage = errorMessage;
     }
-
 }

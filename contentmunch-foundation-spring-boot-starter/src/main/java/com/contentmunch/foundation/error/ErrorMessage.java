@@ -1,9 +1,8 @@
 package com.contentmunch.foundation.error;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.Builder;
 
+import org.springframework.http.HttpStatus;
+
 @Builder
-public record ErrorMessage(String message, String code, HttpStatus status) {
-}
+public record ErrorMessage(String message, String code, HttpStatus status) {}

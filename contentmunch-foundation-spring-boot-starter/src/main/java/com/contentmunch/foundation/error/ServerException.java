@@ -6,6 +6,7 @@ public class ServerException extends BaseException {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
     public ServerException(ErrorMessage errorMessage) {
         super(errorMessage);
     }

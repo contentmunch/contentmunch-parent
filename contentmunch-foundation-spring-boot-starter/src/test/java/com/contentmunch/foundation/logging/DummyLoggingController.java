@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class DummyLoggingController {
     @PostMapping(value = "/api/dummy/logs", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Map<String, String>> test(@RequestBody Map<String, String> body){
+    public ResponseEntity<Map<String, String>> test(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(body);
     }
 
     @GetMapping(value = "/public/health", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> health(){
+    public ResponseEntity<String> health() {
         return ResponseEntity.ok("ok");
     }
 
     @GetMapping(value = "/api/dummy/text")
-    public ResponseEntity<String> text(){
+    public ResponseEntity<String> text() {
         return ResponseEntity.ok("This is a plain text response");
     }
 
     @GetMapping("/api/dummy/binary")
-    public ResponseEntity<byte[]> binary(){
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new byte[]{0, 1, 2});
+    public ResponseEntity<byte[]> binary() {
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new byte[] {0, 1, 2});
     }
 }

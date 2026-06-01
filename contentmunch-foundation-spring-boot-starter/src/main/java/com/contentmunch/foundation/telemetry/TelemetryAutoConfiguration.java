@@ -20,7 +20,7 @@ public class TelemetryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @Order(Ordered.HIGHEST_PRECEDENCE + 10)
-    public TelemetryHeaderFilter telemetryHeaderFilter(){
+    public TelemetryHeaderFilter telemetryHeaderFilter() {
         return new TelemetryHeaderFilter();
     }
 }

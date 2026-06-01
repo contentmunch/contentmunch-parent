@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
 public class VirtualThreadAutoConfiguration {
     @Bean
     @Primary
-    public ExecutorService virtualThreadExecutor(){
+    public ExecutorService virtualThreadExecutor() {
         return Executors.newVirtualThreadPerTaskExecutor();
     }
 }

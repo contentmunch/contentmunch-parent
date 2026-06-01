@@ -59,20 +59,27 @@ class AuthControllerMvcTest {
     @TestConfiguration
     static class TestConfig {
         @Bean
-        public ContentmunchUserDetailsService userDetailsService(){
-            return mock(ContentmunchUserDetailsService.class,CALLS_REAL_METHODS);
+        public ContentmunchUserDetailsService userDetailsService() {
+            return mock(ContentmunchUserDetailsService.class, CALLS_REAL_METHODS);
         }
     }
 
-    private final ContentmunchUser contentmunchUser = ContentmunchUser.builder().id(1L).enabled(true).username("user")
-            .password("{noop}pass}").email("user@email.com").name("User Name")
-            .roles(Set.of(ContentmunchRole.ROLE_USER,ContentmunchRole.ROLE_ADMIN)).build();
+    private final ContentmunchUser contentmunchUser = ContentmunchUser.builder()
+            .id(1L)
+            .enabled(true)
+            .username("user")
+            .password("{noop}pass}")
+            .email("user@email.com")
+            .name("User Name")
+            .roles(Set.of(ContentmunchRole.ROLE_USER, ContentmunchRole.ROLE_ADMIN))
+            .build();
 
     @Test
-    void login_shouldAuthenticateAndSetCookieAndReturnUser() throws Exception{
+    void login_shouldAuthenticateAndSetCookieAndReturnUser() throws Exception {
         String jwt = "fake-jwt-token";
-        var expectedCookie = ResponseCookie.from("contentmunch-auth",jwt).build();
-        String jsonBody = """
+        var expectedCookie = ResponseCookie.from("contentmunch-auth", jwt).build();
+        String jsonBody =
+                """
                 {
                   "username": "user",
                   "password": "pass"
@@ -84,8 +91,8 @@ class AuthControllerMvcTest {
 
         // 2. STUB THE AUTHENTICATION MANAGER (The Missing Piece)
         // Create an Authentication object that holds your user
-        Authentication auth = new UsernamePasswordAuthenticationToken(contentmunchUser, null,
-                contentmunchUser.getAuthorities());
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(contentmunchUser, null, contentmunchUser.getAuthorities());
 
         // Tell the mock manager to return this auth object
         when(authenticationManager.authenticate(any())).thenReturn(auth);
@@ -97,33 +104,44 @@ class AuthControllerMvcTest {
         when(cookieService.cookieFromRefreshToken(jwt)).thenReturn(expectedCookie);
 
         // 4. Execute
-        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(jsonBody))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.username").value("user"))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE,containsString("contentmunch-auth=" + jwt)));
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("user"))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("contentmunch-auth=" + jwt)));
     }
 
     @Test
-    void logout_shouldClearAuthCookie() throws Exception{
-        var logoutCookie = ResponseCookie.from("contentmunch-auth","").maxAge(0).build();
+    void logout_shouldClearAuthCookie() throws Exception {
+        var logoutCookie =
+                ResponseCookie.from("contentmunch-auth", "").maxAge(0).build();
 
-        when(cookieService.cookieFromAccessToken("",0)).thenReturn(logoutCookie);
+        when(cookieService.cookieFromAccessToken("", 0)).thenReturn(logoutCookie);
 
-        mockMvc.perform(post("/api/auth/logout")).andExpect(status().isOk()).andExpect(content().string("Logged out"))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE,
-                        Matchers.allOf(Matchers.containsString("contentmunch-auth="),
-                                Matchers.containsString("Max-Age=0"),Matchers.containsString("Expires="))));
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Logged out"))
+                .andExpect(header().string(
+                                HttpHeaders.SET_COOKIE,
+                                Matchers.allOf(
+                                        Matchers.containsString("contentmunch-auth="),
+                                        Matchers.containsString("Max-Age=0"),
+                                        Matchers.containsString("Expires="))));
     }
 
     @Test
-    void getProtected_shouldReturnUserFromSecurityContext() throws Exception{
+    void getProtected_shouldReturnUserFromSecurityContext() throws Exception {
         var auth = new UsernamePasswordAuthenticationToken(contentmunchUser, null, contentmunchUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        mockMvc.perform(get("/api/auth/me")).andExpect(status().isOk()).andExpect(jsonPath("$.username").value("user"));
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("user"));
     }
 
     @Test
-    void getProtected_shouldReturnAccessDenied_ifPrincipalIsInvalid() throws Exception{
+    void getProtected_shouldReturnAccessDenied_ifPrincipalIsInvalid() throws Exception {
         var auth = new UsernamePasswordAuthenticationToken("not-a-user", null, List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
 

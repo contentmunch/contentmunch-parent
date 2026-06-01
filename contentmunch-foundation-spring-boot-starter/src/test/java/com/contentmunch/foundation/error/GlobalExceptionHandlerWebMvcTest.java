@@ -18,29 +18,33 @@ public class GlobalExceptionHandlerWebMvcTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldHandleServerException() throws Exception{
-        mockMvc.perform(get("/dummy/error/server")).andExpect(status().is5xxServerError())
+    void shouldHandleServerException() throws Exception {
+        mockMvc.perform(get("/dummy/error/server"))
+                .andExpect(status().is5xxServerError())
                 .andExpect(jsonPath("$.errorCode").value("SERVER_ERR"))
                 .andExpect(jsonPath("$.errorMessage").value("Internal server error"));
     }
 
     @Test
-    void shouldHandleClientException() throws Exception{
-        mockMvc.perform(get("/dummy/error/client")).andExpect(status().isBadRequest())
+    void shouldHandleClientException() throws Exception {
+        mockMvc.perform(get("/dummy/error/client"))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("CLIENT_ERR"))
                 .andExpect(jsonPath("$.errorMessage").value("Invalid request"));
     }
 
     @Test
-    void shouldHandleBusinessException() throws Exception{
-        mockMvc.perform(get("/dummy/error/business")).andExpect(status().isUnprocessableEntity())
+    void shouldHandleBusinessException() throws Exception {
+        mockMvc.perform(get("/dummy/error/business"))
+                .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.errorCode").value("BUSINESS_ERR"))
                 .andExpect(jsonPath("$.errorMessage").value("Violation"));
     }
 
     @Test
-    void shouldHandleUnhandledException() throws Exception{
-        mockMvc.perform(get("/dummy/error/unhandled")).andExpect(status().isInternalServerError())
+    void shouldHandleUnhandledException() throws Exception {
+        mockMvc.perform(get("/dummy/error/unhandled"))
+                .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").value("INTERNAL_SERVER_ERROR"))
                 .andExpect(jsonPath("$.errorMessage").value("Internal Server Error"));
     }

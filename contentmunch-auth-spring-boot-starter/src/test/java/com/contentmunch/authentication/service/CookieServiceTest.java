@@ -16,22 +16,32 @@ class CookieServiceTest {
     private CookieService cookieService;
 
     @BeforeEach
-    void setUp(){
-        AuthConfigProperties.CookieConfig cookieConfig = AuthConfigProperties.CookieConfig.builder().name("auth-token")
-                .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX).secure(true).httpOnly(true).path("/").build();
+    void setUp() {
+        AuthConfigProperties.CookieConfig cookieConfig = AuthConfigProperties.CookieConfig.builder()
+                .name("auth-token")
+                .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX)
+                .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .build();
 
-        AuthConfigProperties config = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(60)
-                .refreshTokenMaxAgeDays(7).secret("dummy-secret").cookie(cookieConfig).users(Map.of()).build();
+        AuthConfigProperties config = AuthConfigProperties.builder()
+                .accessTokenMaxAgeInMinutes(60)
+                .refreshTokenMaxAgeDays(7)
+                .secret("dummy-secret")
+                .cookie(cookieConfig)
+                .users(Map.of())
+                .build();
 
         cookieService = new CookieService(config);
     }
 
     @Test
-    void shouldCreateCookieWithCustomMaxAge(){
+    void shouldCreateCookieWithCustomMaxAge() {
         String token = "abc123";
         int customMaxAge = 10;
 
-        ResponseCookie cookie = cookieService.cookieFromAccessToken(token,customMaxAge);
+        ResponseCookie cookie = cookieService.cookieFromAccessToken(token, customMaxAge);
 
         assertThat(cookie.getName()).isEqualTo("auth-token");
         assertThat(cookie.getValue()).isEqualTo("abc123");
@@ -43,7 +53,7 @@ class CookieServiceTest {
     }
 
     @Test
-    void shouldCreateCookieUsingDefaultMaxAge(){
+    void shouldCreateCookieUsingDefaultMaxAge() {
         String token = "xyz456";
 
         ResponseCookie cookie = cookieService.cookieFromAccessToken(token);
@@ -54,31 +64,41 @@ class CookieServiceTest {
     }
 
     @Test
-    void shouldCreateCookieWithDifferentSameSiteValues(){
-        for (AuthConfigProperties.CookieConfig.SameSite sameSite : AuthConfigProperties.CookieConfig.SameSite
-                .values()) {
-            var cookieConfig = AuthConfigProperties.CookieConfig.builder().name("auth-token").sameSite(sameSite)
-                    .secure(true).httpOnly(true).path("/").build();
+    void shouldCreateCookieWithDifferentSameSiteValues() {
+        for (AuthConfigProperties.CookieConfig.SameSite sameSite :
+                AuthConfigProperties.CookieConfig.SameSite.values()) {
+            var cookieConfig = AuthConfigProperties.CookieConfig.builder()
+                    .name("auth-token")
+                    .sameSite(sameSite)
+                    .secure(true)
+                    .httpOnly(true)
+                    .path("/")
+                    .build();
 
-            var config = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(60).refreshTokenMaxAgeDays(7)
-                    .secret("secret").cookie(cookieConfig).users(Map.of()).build();
+            var config = AuthConfigProperties.builder()
+                    .accessTokenMaxAgeInMinutes(60)
+                    .refreshTokenMaxAgeDays(7)
+                    .secret("secret")
+                    .cookie(cookieConfig)
+                    .users(Map.of())
+                    .build();
 
             var service = new CookieService(config);
 
-            ResponseCookie cookie = service.cookieFromAccessToken("token-" + sameSite.name(),5);
+            ResponseCookie cookie = service.cookieFromAccessToken("token-" + sameSite.name(), 5);
             assertThat(cookie.getSameSite()).isEqualTo(sameSite.getValue());
         }
     }
 
     @Test
-    void shouldHandleZeroOrNegativeMaxAgeGracefully(){
-        ResponseCookie cookie = cookieService.cookieFromAccessToken("token",0);
+    void shouldHandleZeroOrNegativeMaxAgeGracefully() {
+        ResponseCookie cookie = cookieService.cookieFromAccessToken("token", 0);
         assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofMinutes(0));
     }
 
     @Test
-    void shouldHandleEmptyToken(){
-        ResponseCookie cookie = cookieService.cookieFromAccessToken("",5);
+    void shouldHandleEmptyToken() {
+        ResponseCookie cookie = cookieService.cookieFromAccessToken("", 5);
         assertThat(cookie.getValue()).isEmpty();
     }
 }

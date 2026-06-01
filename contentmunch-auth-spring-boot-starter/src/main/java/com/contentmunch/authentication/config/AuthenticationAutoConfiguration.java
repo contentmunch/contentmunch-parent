@@ -15,12 +15,13 @@ import com.contentmunch.authentication.service.TokenizationService;
 
 @Configuration
 @EnableConfigurationProperties({AuthConfigProperties.class})
-@ImportAutoConfiguration(classes = {CookieService.class, TokenizationService.class, SecurityExceptionHandler.class,
-        AuthController.class})
+@ImportAutoConfiguration(
+        classes = {CookieService.class, TokenizationService.class, SecurityExceptionHandler.class, AuthController.class
+        })
 public class AuthenticationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ContentmunchUserDetailsService.class)
-    public ContentmunchUserDetailsService propertyUserDetailsService(AuthConfigProperties authConfig){
+    public ContentmunchUserDetailsService propertyUserDetailsService(AuthConfigProperties authConfig) {
         return new PropertyUserDetailsService(authConfig);
     }
 }

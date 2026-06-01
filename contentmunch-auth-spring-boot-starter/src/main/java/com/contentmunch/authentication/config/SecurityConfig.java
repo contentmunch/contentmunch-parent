@@ -1,7 +1,15 @@
 package com.contentmunch.authentication.config;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Optional;
+
+import lombok.NonNull;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,43 +30,47 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.contentmunch.authentication.service.TokenizationService;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
-
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,TokenizationService tokenizationService,
-            AuthConfigProperties authConfigProperties,UserDetailsService userDetailsService) throws Exception{
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            TokenizationService tokenizationService,
+            AuthConfigProperties authConfigProperties,
+            UserDetailsService userDetailsService)
+            throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/api/auth/login","/api/auth/logout","/api/auth/refresh")
-                                .permitAll().anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter(tokenizationService,authConfigProperties,userDetailsService),
+                        auth -> auth.requestMatchers("/api/auth/login", "/api/auth/logout", "/api/auth/refresh")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
+                .addFilterBefore(
+                        jwtAuthFilter(tokenizationService, authConfigProperties, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    public OncePerRequestFilter jwtAuthFilter(TokenizationService tokenizationService,AuthConfigProperties authConfig,
-            UserDetailsService userDetailsService){
+    public OncePerRequestFilter jwtAuthFilter(
+            TokenizationService tokenizationService,
+            AuthConfigProperties authConfig,
+            UserDetailsService userDetailsService) {
         return new OncePerRequestFilter() {
 
             @Override
-            protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
-                    @NonNull FilterChain filterChain) throws ServletException, IOException{
+            protected void doFilterInternal(
+                    @NonNull HttpServletRequest request,
+                    @NonNull HttpServletResponse response,
+                    @NonNull FilterChain filterChain)
+                    throws ServletException, IOException {
                 String token = null;
 
                 // Check Authorization header
@@ -69,7 +81,8 @@ public class SecurityConfig {
 
                 // Fallback to cookie if Authorization header is not present
                 if (token == null) {
-                    for (Cookie cookie : Optional.ofNullable(request.getCookies()).orElse(new Cookie[0])) {
+                    for (Cookie cookie :
+                            Optional.ofNullable(request.getCookies()).orElse(new Cookie[0])) {
                         if (authConfig.cookie().name().equals(cookie.getName())) {
                             token = cookie.getValue();
                             break;
@@ -90,12 +103,12 @@ public class SecurityConfig {
                         userDetails = tokenizationService.extractUser(token);
                     }
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                            null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
 
-                filterChain.doFilter(request,response);
+                filterChain.doFilter(request, response);
             }
         };
     }

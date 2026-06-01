@@ -2,42 +2,53 @@ package com.contentmunch.authentication.config;
 
 import java.util.Map;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.contentmunch.authentication.model.ContentmunchUser;
 
-import lombok.Builder;
-import lombok.Getter;
-
 @ConfigurationProperties(prefix = "contentmunch.auth")
 @Builder
-public record AuthConfigProperties(int accessTokenMaxAgeInMinutes, int refreshTokenMaxAgeDays, String secret,
-        CookieConfig cookie, Map<String, ContentmunchUser> users) {
+public record AuthConfigProperties(
+        int accessTokenMaxAgeInMinutes,
+        int refreshTokenMaxAgeDays,
+        String secret,
+        CookieConfig cookie,
+        Map<String, ContentmunchUser> users) {
 
     public AuthConfigProperties {
         users = users == null ? Map.of() : Map.copyOf(users);
     }
 
     public static class AuthConfigPropertiesBuilder {
-        public AuthConfigPropertiesBuilder users(Map<String, ContentmunchUser> users){
+        public AuthConfigPropertiesBuilder users(Map<String, ContentmunchUser> users) {
             this.users = users == null ? Map.of() : Map.copyOf(users);
             return this;
         }
     }
 
     @Builder
-    public record CookieConfig(String name, String domain, SameSite sameSite, boolean secure, boolean httpOnly,
-            String path, String refreshTokenPath) {
+    public record CookieConfig(
+            String name,
+            String domain,
+            SameSite sameSite,
+            boolean secure,
+            boolean httpOnly,
+            String path,
+            String refreshTokenPath) {
 
         @Getter
         public enum SameSite {
-            NONE("None"), LAX("Lax"), STRICT("Strict");
+            NONE("None"),
+            LAX("Lax"),
+            STRICT("Strict");
             private final String value;
 
             SameSite(String value) {
                 this.value = value;
             }
-
         }
     }
 }

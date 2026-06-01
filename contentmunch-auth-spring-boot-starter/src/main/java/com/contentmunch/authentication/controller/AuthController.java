@@ -1,5 +1,11 @@
 package com.contentmunch.authentication.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +24,6 @@ import com.contentmunch.authentication.model.ContentmunchUser;
 import com.contentmunch.authentication.service.CookieService;
 import com.contentmunch.authentication.service.TokenizationService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -34,9 +35,9 @@ public class AuthController {
     private final TokenizationService tokenizationService;
 
     @PostMapping("/login")
-    public ResponseEntity<ContentmunchUser> login(@RequestBody AuthRequest authRequest,HttpServletResponse response){
-        var authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
+    public ResponseEntity<ContentmunchUser> login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
 
         var authenticatedUser = authentication.getPrincipal();
         if (authenticatedUser instanceof ContentmunchUser contentmunchUser) {
@@ -49,10 +50,10 @@ public class AuthController {
             var refreshTokenCookie = cookieService.cookieFromRefreshToken(refreshToken); // path: /api/auth/refresh
 
             // Set cookies
-            response.setHeader(HttpHeaders.SET_COOKIE,accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE,refreshTokenCookie.toString());
+            response.setHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
-            log.info("User {} logged in",authRequest.username());
+            log.info("User {} logged in", authRequest.username());
 
             return ResponseEntity.ok(contentmunchUser);
         } else {
@@ -61,14 +62,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response){
-        var cookie = cookieService.cookieFromAccessToken("",0).toString();
-        response.setHeader(HttpHeaders.SET_COOKIE,cookie);
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        var cookie = cookieService.cookieFromAccessToken("", 0).toString();
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie);
         return ResponseEntity.ok("Logged out");
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ContentmunchUser> getProtected(){
+    public ResponseEntity<ContentmunchUser> getProtected() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         var principal = auth.getPrincipal();
         if (principal instanceof ContentmunchUser contentmunchUser) {
@@ -80,7 +81,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ContentmunchUser> refreshToken(HttpServletRequest request,HttpServletResponse response){
+    public ResponseEntity<ContentmunchUser> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         var refreshToken = cookieService.extractRefreshToken(request);
         if (!tokenizationService.validateToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -90,15 +91,17 @@ public class AuthController {
         var userDetails = userDetailsService.loadUserByUsername(username);
         if (userDetails instanceof ContentmunchUser contentmunchUser) {
             String newAccessToken = tokenizationService.generateAccessToken(contentmunchUser);
-            var newAccessCookie = cookieService.cookieFromAccessToken(newAccessToken).toString();
-            response.setHeader(HttpHeaders.SET_COOKIE,newAccessCookie);
+            var newAccessCookie =
+                    cookieService.cookieFromAccessToken(newAccessToken).toString();
+            response.setHeader(HttpHeaders.SET_COOKIE, newAccessCookie);
 
             // Optional: rotate refresh token
             String newRefreshToken = tokenizationService.generateRefreshToken(contentmunchUser);
-            var refreshCookie = cookieService.cookieFromRefreshToken(newRefreshToken).toString();
-            response.addHeader(HttpHeaders.SET_COOKIE,refreshCookie);
+            var refreshCookie =
+                    cookieService.cookieFromRefreshToken(newRefreshToken).toString();
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie);
 
-            log.info("Access token refreshed for user {}",contentmunchUser.getUsername());
+            log.info("Access token refreshed for user {}", contentmunchUser.getUsername());
 
             return ResponseEntity.ok(contentmunchUser);
         } else {
@@ -109,10 +112,10 @@ public class AuthController {
     @PostMapping("/permanent-token")
     @PreAuthorize("hasRole('ADMIN')") // 👈 Restricts access strictly to ADMIN users
     public ResponseEntity<AuthResponse> generateAdminPermanentToken(
-            @AuthenticationPrincipal ContentmunchUser adminUser){
+            @AuthenticationPrincipal ContentmunchUser adminUser) {
 
         String permanentToken = tokenizationService.generatePermanentAccessToken(adminUser);
-        log.info("Admin user {} generated a long-lived Bearer token",adminUser.getUsername());
+        log.info("Admin user {} generated a long-lived Bearer token", adminUser.getUsername());
 
         return ResponseEntity.ok(new AuthResponse(adminUser.username(), permanentToken));
     }

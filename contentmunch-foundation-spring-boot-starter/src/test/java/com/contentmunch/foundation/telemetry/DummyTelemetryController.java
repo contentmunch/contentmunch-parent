@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/dummy/telemetry")
 class DummyTelemetryController {
     @GetMapping("/ok")
-    public String ok(){
+    public String ok() {
         return "ok";
     }
 }

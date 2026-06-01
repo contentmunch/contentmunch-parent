@@ -1,29 +1,34 @@
 package com.contentmunch.foundation.telemetry;
 
-import java.io.IOException;
-
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import io.opentelemetry.api.trace.Span;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
 import lombok.NonNull;
+
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import io.opentelemetry.api.trace.Span;
 
 public class TelemetryHeaderFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException{
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
         var span = Span.current();
         var context = span.getSpanContext();
 
         if (context.isValid()) {
-            response.setHeader("X-Trace-Id",context.getTraceId());
-            response.setHeader("X-Span-Id",context.getSpanId());
+            response.setHeader("X-Trace-Id", context.getTraceId());
+            response.setHeader("X-Span-Id", context.getSpanId());
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

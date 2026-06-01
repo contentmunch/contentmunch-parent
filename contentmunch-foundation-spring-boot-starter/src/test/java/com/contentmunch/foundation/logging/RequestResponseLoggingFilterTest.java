@@ -26,13 +26,14 @@ class RequestResponseLoggingFilterTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldLogMaskedSensitiveData() throws Exception{
+    void shouldLogMaskedSensitiveData() throws Exception {
         List<String> logs;
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo();
 
-            var json = """
+            var json =
+                    """
                     {
                       "username": "user1",
                       "password": "my-secret-password",
@@ -40,35 +41,43 @@ class RequestResponseLoggingFilterTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/dummy/logs").contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization","Bearer real-token").header("Cookie","session-id=xyz").content(json))
+            mockMvc.perform(post("/api/dummy/logs")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", "Bearer real-token")
+                            .header("Cookie", "session-id=xyz")
+                            .content(json))
                     .andExpect(status().isOk());
 
             logs = logCaptor.getInfoLogs();
         }
-        assertThat(logs).anyMatch(log -> log.contains("Incoming Request") && log.contains("\"password\":\"***\"")
-                && log.contains("\"token\":\"***\"") && log.contains("\"username\":\"user1\"")
-                && log.contains("Authorization=***") && log.contains("Cookie=***"));
+        assertThat(logs)
+                .anyMatch(log -> log.contains("Incoming Request")
+                        && log.contains("\"password\":\"***\"")
+                        && log.contains("\"token\":\"***\"")
+                        && log.contains("\"username\":\"user1\"")
+                        && log.contains("Authorization=***")
+                        && log.contains("Cookie=***"));
 
         assertThat(logs).noneMatch(log -> log.contains("my-secret-password") || log.contains("Bearer real-token"));
     }
 
     @Test
-    void shouldNotFilterNonApiPaths() throws Exception{
+    void shouldNotFilterNonApiPaths() throws Exception {
 
         List<String> logs;
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo(); // Ensure INFO level logs are captured
 
-            mockMvc.perform(get("/public/health").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()); // Or
-                                                                                                                       // whatever
-                                                                                                                       // your
-                                                                                                                       // dummy
-                                                                                                                       // controller
-                                                                                                                       // returns
-                                                                                                                       // for
-                                                                                                                       // this
+            mockMvc.perform(get("/public/health").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk()); // Or
+            // whatever
+            // your
+            // dummy
+            // controller
+            // returns
+            // for
+            // this
             logs = logCaptor.getInfoLogs();
         }
 
@@ -76,10 +85,10 @@ class RequestResponseLoggingFilterTest {
     }
 
     @Test
-    void shouldLogPlainTextBodyIfContentTypeIsText() throws Exception{
+    void shouldLogPlainTextBodyIfContentTypeIsText() throws Exception {
         List<String> logs;
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo(); // Ensure INFO level logs are captured
             mockMvc.perform(get("/api/dummy/text")).andExpect(status().isOk());
 
@@ -91,10 +100,10 @@ class RequestResponseLoggingFilterTest {
     }
 
     @Test
-    void shouldSkipBodyForBinaryResponse() throws Exception{
+    void shouldSkipBodyForBinaryResponse() throws Exception {
         List<String> logs;
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo();
             mockMvc.perform(get("/api/dummy/binary")).andExpect(status().isOk());
 
@@ -105,37 +114,42 @@ class RequestResponseLoggingFilterTest {
     }
 
     @Test
-    void shouldTruncateLargeBody() throws Exception{
+    void shouldTruncateLargeBody() throws Exception {
         List<String> logs;
 
-        String largeJson = """
+        String largeJson =
+                """
                 {
                   "description": "%s"
                 }
-                """.formatted("a".repeat(9000));
+                """
+                        .formatted("a".repeat(9000));
 
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo();
-            mockMvc.perform(post("/api/dummy/logs").contentType(MediaType.APPLICATION_JSON).content(largeJson))
+            mockMvc.perform(post("/api/dummy/logs")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(largeJson))
                     .andExpect(status().isOk());
 
             logs = logCaptor.getInfoLogs();
         }
 
         assertThat(logs).anyMatch(log -> log.contains("...(truncated)"));
-
     }
 
     @Test
-    void shouldNotFailOnMalformedJsonBody() throws Exception{
+    void shouldNotFailOnMalformedJsonBody() throws Exception {
         List<String> logs;
-        try (LogCaptor logCaptor = LogCaptor
-                .forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
+        try (LogCaptor logCaptor =
+                LogCaptor.forName("com.contentmunch.foundation.logging.RequestResponseLoggingFilter")) {
             logCaptor.setLogLevelToInfo();
             String invalidJson = "{\"username\": \"user1\", \"password\": ";
 
-            mockMvc.perform(post("/api/dummy/logs").contentType(MediaType.APPLICATION_JSON).content(invalidJson))
+            mockMvc.perform(post("/api/dummy/logs")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(invalidJson))
                     .andExpect(status().is4xxClientError());
 
             logs = logCaptor.getInfoLogs();

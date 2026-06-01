@@ -5,5 +5,4 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(GlobalExceptionHandler.class)
-public class ExceptionHandlerAutoConfiguration {
-}
+public class ExceptionHandlerAutoConfiguration {}

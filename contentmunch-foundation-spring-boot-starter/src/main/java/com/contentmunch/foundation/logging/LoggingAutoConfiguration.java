@@ -17,7 +17,7 @@ import org.springframework.core.Ordered;
 public class LoggingAutoConfiguration {
 
     @Bean
-    public FilterRegistrationBean<RequestResponseLoggingFilter> loggingFilter(){
+    public FilterRegistrationBean<RequestResponseLoggingFilter> loggingFilter() {
         FilterRegistrationBean<RequestResponseLoggingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new RequestResponseLoggingFilter());
 

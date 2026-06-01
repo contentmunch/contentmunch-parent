@@ -23,23 +23,35 @@ class TokenizationServiceTest {
     private ContentmunchUser user;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         String secret = "a-very-secure-secret-key-12345678901234567890"; // 32+ chars for HS256
-        AuthConfigProperties authConfig = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(60)
-                .refreshTokenMaxAgeDays(7).secret(secret)
-                .cookie(AuthConfigProperties.CookieConfig.builder().name("token")
-                        .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX).secure(true).httpOnly(true).path("/")
+        AuthConfigProperties authConfig = AuthConfigProperties.builder()
+                .accessTokenMaxAgeInMinutes(60)
+                .refreshTokenMaxAgeDays(7)
+                .secret(secret)
+                .cookie(AuthConfigProperties.CookieConfig.builder()
+                        .name("token")
+                        .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX)
+                        .secure(true)
+                        .httpOnly(true)
+                        .path("/")
                         .build())
-                .users(Map.of()).build();
+                .users(Map.of())
+                .build();
 
         tokenizationService = new TokenizationService(authConfig);
         tokenizationService.init();
-        user = ContentmunchUser.builder().name("John Doe").username("user1").email("john@example.com")
-                .password("password").roles(Set.of(ContentmunchRole.ROLE_USER)).build();
+        user = ContentmunchUser.builder()
+                .name("John Doe")
+                .username("user1")
+                .email("john@example.com")
+                .password("password")
+                .roles(Set.of(ContentmunchRole.ROLE_USER))
+                .build();
     }
 
     @Test
-    void shouldGenerateAndValidateTokenSuccessfully(){
+    void shouldGenerateAndValidateTokenSuccessfully() {
         String token = tokenizationService.generateAccessToken(user);
 
         assertThat(token).isNotNull();
@@ -47,7 +59,7 @@ class TokenizationServiceTest {
     }
 
     @Test
-    void shouldExtractUsernameFromToken(){
+    void shouldExtractUsernameFromToken() {
         String token = tokenizationService.generateAccessToken(user);
 
         String extractedUsername = tokenizationService.extractUsername(token);
@@ -56,38 +68,47 @@ class TokenizationServiceTest {
     }
 
     @Test
-    void shouldFailValidationForInvalidToken(){
+    void shouldFailValidationForInvalidToken() {
         String invalidToken = "this.is.not.valid";
 
         assertThat(tokenizationService.validateToken(invalidToken)).isFalse();
     }
 
     @Test
-    void shouldThrowExceptionWhenExtractingFromInvalidToken(){
+    void shouldThrowExceptionWhenExtractingFromInvalidToken() {
         String invalidToken = "invalid.token.value";
 
-        assertThrows(Exception.class,() -> tokenizationService.extractUsername(invalidToken));
+        assertThrows(Exception.class, () -> tokenizationService.extractUsername(invalidToken));
     }
 
     @Test
-    void shouldGenerateAccessTokenWithExpiration(){
+    void shouldGenerateAccessTokenWithExpiration() {
         String token = tokenizationService.generateAccessToken(user);
 
         var claims = io.jsonwebtoken.Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes())).build()
-                .parseSignedClaims(token).getPayload();
+                .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
 
         assertThat(claims.getExpiration().toInstant()).isAfter(Instant.now());
     }
 
     @Test
-    void shouldFailValidationForExpiredToken(){
-        var expiredAuthConfig = AuthConfigProperties.builder().accessTokenMaxAgeInMinutes(-1) // already expired
-                .refreshTokenMaxAgeDays(7).secret("a-very-secure-secret-key-12345678901234567890")
-                .cookie(AuthConfigProperties.CookieConfig.builder().name("token")
-                        .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX).secure(true).httpOnly(true).path("/")
+    void shouldFailValidationForExpiredToken() {
+        var expiredAuthConfig = AuthConfigProperties.builder()
+                .accessTokenMaxAgeInMinutes(-1) // already expired
+                .refreshTokenMaxAgeDays(7)
+                .secret("a-very-secure-secret-key-12345678901234567890")
+                .cookie(AuthConfigProperties.CookieConfig.builder()
+                        .name("token")
+                        .sameSite(AuthConfigProperties.CookieConfig.SameSite.LAX)
+                        .secure(true)
+                        .httpOnly(true)
+                        .path("/")
                         .build())
-                .users(Map.of()).build();
+                .users(Map.of())
+                .build();
 
         TokenizationService expiredTokenService = new TokenizationService(expiredAuthConfig);
         expiredTokenService.init();
@@ -97,24 +118,26 @@ class TokenizationServiceTest {
     }
 
     @Test
-    void shouldFailValidationForTamperedToken(){
+    void shouldFailValidationForTamperedToken() {
         String validToken = tokenizationService.generateAccessToken(user);
-        String tamperedToken = validToken.substring(0,validToken.length() - 1) + "x"; // change last char
+        String tamperedToken = validToken.substring(0, validToken.length() - 1) + "x"; // change last char
 
         assertThat(tokenizationService.validateToken(tamperedToken)).isFalse();
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldContainCorrectClaimsInToken(){
+    void shouldContainCorrectClaimsInToken() {
         String token = tokenizationService.generateAccessToken(user);
 
         var claims = io.jsonwebtoken.Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes())).build()
-                .parseSignedClaims(token).getPayload();
+                .verifyWith(Keys.hmacShaKeyFor("a-very-secure-secret-key-12345678901234567890".getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
 
-        assertThat(claims.get("email",String.class)).isEqualTo("john@example.com");
-        assertThat(claims.get("name",String.class)).isEqualTo("John Doe");
+        assertThat(claims.get("email", String.class)).isEqualTo("john@example.com");
+        assertThat(claims.get("name", String.class)).isEqualTo("John Doe");
         assertThat((List<String>) claims.get("roles")).contains("ROLE_USER");
     }
 }

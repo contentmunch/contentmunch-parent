@@ -8,7 +8,7 @@ public record LokiStreams(List<LokiEntry> streams) {
         streams = streams == null ? List.of() : List.copyOf(streams);
     }
 
-    public static LokiStreams from(LokiStream lokiStream,List<LokiLog> lokiLogs){
+    public static LokiStreams from(LokiStream lokiStream, List<LokiLog> lokiLogs) {
         List<LokiEntry> streams = new ArrayList<>();
         lokiLogs.forEach(lokiLog -> {
             var log = new ArrayList<String>();
@@ -16,8 +16,14 @@ public record LokiStreams(List<LokiEntry> streams) {
 
             log.add(String.valueOf(nanos));
             log.add(lokiLog.log());
-            streams.add(new LokiEntry(LokiStream.builder().app(lokiStream.app()).environment(lokiStream.environment())
-                    .traceId(lokiLog.traceId()).spanId(lokiLog.spanId()).build(), List.of(log)));
+            streams.add(new LokiEntry(
+                    LokiStream.builder()
+                            .app(lokiStream.app())
+                            .environment(lokiStream.environment())
+                            .traceId(lokiLog.traceId())
+                            .spanId(lokiLog.spanId())
+                            .build(),
+                    List.of(log)));
         });
         return new LokiStreams(streams);
     }

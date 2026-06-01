@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -32,7 +34,6 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
-import lombok.Setter;
 
 @Setter
 public class LokiAppender extends AppenderBase<ILoggingEvent> {
@@ -50,18 +51,18 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
 
     private final BlockingQueue<LokiLog> logsQueue = new ArrayBlockingQueue<>(1000);
 
-    private final RateLimiter rateLimiter = RateLimiter.of("lokiRateLimiter",getRateLimiterConfig());
-    private final Retry retry = Retry.of("lokiRetry",getRetryConfig());
-    private final CircuitBreaker circuitBreaker = CircuitBreaker.of("lokiCircuitBreaker",getCircuitBreakerConfig());
+    private final RateLimiter rateLimiter = RateLimiter.of("lokiRateLimiter", getRateLimiterConfig());
+    private final Retry retry = Retry.of("lokiRetry", getRetryConfig());
+    private final CircuitBreaker circuitBreaker = CircuitBreaker.of("lokiCircuitBreaker", getCircuitBreakerConfig());
 
     @Override
-    public void start(){
+    public void start() {
         super.start();
         executor.submit(this::runLogBatchJob);
     }
 
     @Override
-    protected void append(ILoggingEvent loggingEvent){
+    protected void append(ILoggingEvent loggingEvent) {
 
         StringBuilder logBuilder = new StringBuilder(loggingEvent.getFormattedMessage());
 
@@ -78,42 +79,46 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
             logBuilder.append("\n").append(ThrowableProxyUtil.asString(throwableProxy));
         }
 
-        var lokiLog = LokiLog.builder().timestamp(loggingEvent.getTimeStamp()).log(logBuilder.toString()).spanId(spanId)
-                .traceId(traceId).build();
+        var lokiLog = LokiLog.builder()
+                .timestamp(loggingEvent.getTimeStamp())
+                .log(logBuilder.toString())
+                .spanId(spanId)
+                .traceId(traceId)
+                .build();
 
         if (!logsQueue.offer(lokiLog)) {
-            fallbackLogger.warn("Queue full, dropping log: {}",lokiLog.log());
+            fallbackLogger.warn("Queue full, dropping log: {}", lokiLog.log());
         }
     }
 
-    private void runLogBatchJob(){
+    private void runLogBatchJob() {
 
         while (true) {
             try {
-                var firstLog = logsQueue.poll(500,TimeUnit.MILLISECONDS);
+                var firstLog = logsQueue.poll(500, TimeUnit.MILLISECONDS);
                 if (firstLog == null) {
                     continue;
                 }
 
                 if (!circuitBreaker.tryAcquirePermission() || !rateLimiter.acquirePermission()) {
                     fallbackLogger.warn("Circuit open or rate limited, skipping this cycle");
-                    fallbackLogger.warn("Fallback log {}",firstLog.log());
+                    fallbackLogger.warn("Fallback log {}", firstLog.log());
                     continue;
                 }
 
                 List<LokiLog> lokiLogs = new ArrayList<>();
                 lokiLogs.add(firstLog);
-                logsQueue.drainTo(lokiLogs,99);
+                logsQueue.drainTo(lokiLogs, 99);
                 if (!lokiLogs.isEmpty()) {
                     try {
                         sendWithRetry(lokiLogs);
-                        circuitBreaker.onSuccess(0,TimeUnit.MILLISECONDS);
+                        circuitBreaker.onSuccess(0, TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
-                        circuitBreaker.onError(0,TimeUnit.MILLISECONDS,e);
-                        fallbackLogger.error("Failed to push logs",e);
+                        circuitBreaker.onError(0, TimeUnit.MILLISECONDS, e);
+                        fallbackLogger.error("Failed to push logs", e);
                         for (LokiLog log : lokiLogs) {
                             if (!logsQueue.offer(log)) {
-                                fallbackLogger.warn("Queue full, dropping log: {}",log.log());
+                                fallbackLogger.warn("Queue full, dropping log: {}", log.log());
                             }
                         }
                     }
@@ -123,62 +128,72 @@ public class LokiAppender extends AppenderBase<ILoggingEvent> {
                 Thread.currentThread().interrupt();
                 break;
             } catch (Exception e) {
-                fallbackLogger.error("Batch Logger Failure",e);
+                fallbackLogger.error("Batch Logger Failure", e);
             }
         }
     }
 
-    private void sendWithRetry(List<LokiLog> lokiLogs){
+    private void sendWithRetry(List<LokiLog> lokiLogs) {
         try {
             Runnable resilientTask = () -> sendLokiLogs(lokiLogs);
-            resilientTask = Retry.decorateRunnable(retry,resilientTask);
+            resilientTask = Retry.decorateRunnable(retry, resilientTask);
             resilientTask.run();
         } catch (Exception e) {
-            fallbackLogger.error("Failed to push logs after resilience pipeline",e);
+            fallbackLogger.error("Failed to push logs after resilience pipeline", e);
         }
     }
 
-    private void sendLokiLogs(List<LokiLog> lokiLogs){
+    private void sendLokiLogs(List<LokiLog> lokiLogs) {
         try {
-            var lokiStream = LokiStream.builder().app(appName).environment(environment).build();
-            var lokiStreams = LokiStreams.from(lokiStream,lokiLogs);
+            var lokiStream =
+                    LokiStream.builder().app(appName).environment(environment).build();
+            var lokiStreams = LokiStreams.from(lokiStream, lokiLogs);
             var payload = objectMapper.writeValueAsString(lokiStreams);
 
             var headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBasicAuth(username,password);
+            headers.setBasicAuth(username, password);
             HttpEntity<String> entity = new HttpEntity<>(payload, headers);
 
             fallbackLogger.info("Sending logs to Loki");
-            restTemplate.postForEntity(lokiUrl,entity,String.class);
+            restTemplate.postForEntity(lokiUrl, entity, String.class);
 
         } catch (HttpServerErrorException.BadGateway e) {
             // Ignore 502 specifically
-            fallbackLogger
-                    .info("LokiAppender received 502 Bad Gateway. Ignoring since logs may have reached the server.");
+            fallbackLogger.info(
+                    "LokiAppender received 502 Bad Gateway. Ignoring since logs may have reached the server.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private RestTemplate getRestTemplate(){
+    private RestTemplate getRestTemplate() {
         var factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(1000);
         factory.setReadTimeout(1000);
         return new RestTemplate(factory);
     }
 
-    private RateLimiterConfig getRateLimiterConfig(){
-        return RateLimiterConfig.custom().limitRefreshPeriod(Duration.ofSeconds(1)).limitForPeriod(20)
-                .timeoutDuration(Duration.ZERO).build();
+    private RateLimiterConfig getRateLimiterConfig() {
+        return RateLimiterConfig.custom()
+                .limitRefreshPeriod(Duration.ofSeconds(1))
+                .limitForPeriod(20)
+                .timeoutDuration(Duration.ZERO)
+                .build();
     }
 
-    private RetryConfig getRetryConfig(){
-        return RetryConfig.custom().maxAttempts(3).waitDuration(Duration.ofMillis(200)).build();
+    private RetryConfig getRetryConfig() {
+        return RetryConfig.custom()
+                .maxAttempts(3)
+                .waitDuration(Duration.ofMillis(200))
+                .build();
     }
 
-    private CircuitBreakerConfig getCircuitBreakerConfig(){
-        return CircuitBreakerConfig.custom().failureRateThreshold(50).waitDurationInOpenState(Duration.ofSeconds(10))
-                .slidingWindowSize(10).build();
+    private CircuitBreakerConfig getCircuitBreakerConfig() {
+        return CircuitBreakerConfig.custom()
+                .failureRateThreshold(50)
+                .waitDurationInOpenState(Duration.ofSeconds(10))
+                .slidingWindowSize(10)
+                .build();
     }
 }
