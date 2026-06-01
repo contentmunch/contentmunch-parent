@@ -1,11 +1,14 @@
 package com.contentmunch.authentication.controller;
 
+import com.contentmunch.authentication.model.AuthRequest;
+import com.contentmunch.authentication.model.AuthResponse;
+import com.contentmunch.authentication.model.ContentmunchUser;
+import com.contentmunch.authentication.service.CookieService;
+import com.contentmunch.authentication.service.TokenizationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import com.contentmunch.authentication.model.AuthRequest;
-import com.contentmunch.authentication.model.AuthResponse;
-import com.contentmunch.authentication.model.ContentmunchUser;
-import com.contentmunch.authentication.service.CookieService;
-import com.contentmunch.authentication.service.TokenizationService;
 
 @RestController
 @RequestMapping("/api/auth")

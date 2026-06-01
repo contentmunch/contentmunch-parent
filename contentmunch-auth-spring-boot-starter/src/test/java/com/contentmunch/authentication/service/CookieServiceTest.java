@@ -2,14 +2,12 @@ package com.contentmunch.authentication.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.contentmunch.authentication.config.AuthConfigProperties;
 import java.time.Duration;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseCookie;
-
-import com.contentmunch.authentication.config.AuthConfigProperties;
 
 class CookieServiceTest {
 

@@ -5,8 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.contentmunch.authentication.model.ContentmunchRole;
+import com.contentmunch.authentication.model.ContentmunchUser;
+import com.contentmunch.authentication.service.TokenizationService;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,10 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import com.contentmunch.authentication.model.ContentmunchRole;
-import com.contentmunch.authentication.model.ContentmunchUser;
-import com.contentmunch.authentication.service.TokenizationService;
 
 @SpringBootTest(
         properties = {

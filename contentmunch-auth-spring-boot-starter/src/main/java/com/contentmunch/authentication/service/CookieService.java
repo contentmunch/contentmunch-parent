@@ -1,17 +1,13 @@
 package com.contentmunch.authentication.service;
 
+import com.contentmunch.authentication.config.AuthConfigProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.time.Duration;
 import java.util.Arrays;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-
-import com.contentmunch.authentication.config.AuthConfigProperties;
 
 @Service
 @RequiredArgsConstructor

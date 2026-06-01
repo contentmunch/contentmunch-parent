@@ -1,15 +1,12 @@
 package com.contentmunch.authentication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.Builder;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Builder
 public record ContentmunchUser(

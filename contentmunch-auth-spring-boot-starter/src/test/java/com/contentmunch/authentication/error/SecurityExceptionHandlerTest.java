@@ -5,6 +5,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.contentmunch.authentication.controller.AuthController;
+import com.contentmunch.authentication.service.CookieService;
+import com.contentmunch.authentication.service.TokenizationService;
+import com.contentmunch.foundation.error.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,11 +23,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import com.contentmunch.authentication.controller.AuthController;
-import com.contentmunch.authentication.service.CookieService;
-import com.contentmunch.authentication.service.TokenizationService;
-import com.contentmunch.foundation.error.GlobalExceptionHandler;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)

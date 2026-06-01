@@ -7,9 +7,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.contentmunch.authentication.controller.AuthController;
+import com.contentmunch.authentication.error.SecurityExceptionHandler;
+import com.contentmunch.authentication.model.ContentmunchRole;
+import com.contentmunch.authentication.model.ContentmunchUser;
+import com.contentmunch.foundation.error.GlobalExceptionHandler;
 import java.util.List;
 import java.util.Set;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +31,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.contentmunch.authentication.controller.AuthController;
-import com.contentmunch.authentication.error.SecurityExceptionHandler;
-import com.contentmunch.authentication.model.ContentmunchRole;
-import com.contentmunch.authentication.model.ContentmunchUser;
-import com.contentmunch.foundation.error.GlobalExceptionHandler;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)

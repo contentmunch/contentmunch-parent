@@ -3,19 +3,16 @@ package com.contentmunch.authentication.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.contentmunch.authentication.config.AuthConfigProperties;
+import com.contentmunch.authentication.model.ContentmunchRole;
+import com.contentmunch.authentication.model.ContentmunchUser;
+import io.jsonwebtoken.security.Keys;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.contentmunch.authentication.config.AuthConfigProperties;
-import com.contentmunch.authentication.model.ContentmunchRole;
-import com.contentmunch.authentication.model.ContentmunchUser;
-
-import io.jsonwebtoken.security.Keys;
 
 class TokenizationServiceTest {
 

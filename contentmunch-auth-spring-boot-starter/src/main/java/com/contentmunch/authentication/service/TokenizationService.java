@@ -1,7 +1,12 @@
 package com.contentmunch.authentication.service;
 
+import com.contentmunch.authentication.config.AuthConfigProperties;
+import com.contentmunch.authentication.model.ContentmunchRole;
+import com.contentmunch.authentication.model.ContentmunchUser;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -9,19 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.crypto.SecretKey;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-
-import com.contentmunch.authentication.config.AuthConfigProperties;
-import com.contentmunch.authentication.model.ContentmunchRole;
-import com.contentmunch.authentication.model.ContentmunchUser;
-
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokenizationService {

@@ -1,13 +1,10 @@
 package com.contentmunch.authentication.service;
 
-import java.util.Optional;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
 import com.contentmunch.authentication.config.AuthConfigProperties;
 import com.contentmunch.authentication.model.ContentmunchUser;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @RequiredArgsConstructor
 public class PropertyUserDetailsService extends ContentmunchUserDetailsService {

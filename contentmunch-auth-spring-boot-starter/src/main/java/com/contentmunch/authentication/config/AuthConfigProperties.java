@@ -1,13 +1,10 @@
 package com.contentmunch.authentication.config;
 
+import com.contentmunch.authentication.model.ContentmunchUser;
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Getter;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.contentmunch.authentication.model.ContentmunchUser;
 
 @ConfigurationProperties(prefix = "contentmunch.auth")
 @Builder

@@ -1,10 +1,9 @@
 package com.contentmunch.authentication.service;
 
+import com.contentmunch.authentication.model.ContentmunchUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import com.contentmunch.authentication.model.ContentmunchUser;
 
 public abstract class ContentmunchUserDetailsService implements UserDetailsService {
 
