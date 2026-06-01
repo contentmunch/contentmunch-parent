@@ -3,14 +3,17 @@ package com.contentmunch.authentication.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import com.contentmunch.authentication.model.AuthRequest;
+import com.contentmunch.authentication.model.AuthResponse;
 import com.contentmunch.authentication.model.ContentmunchUser;
 import com.contentmunch.authentication.service.CookieService;
 import com.contentmunch.authentication.service.TokenizationService;
@@ -101,5 +104,16 @@ public class AuthController {
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
+    }
+
+    @PostMapping("/permanent-token")
+    @PreAuthorize("hasRole('ADMIN')") // 👈 Restricts access strictly to ADMIN users
+    public ResponseEntity<AuthResponse> generateAdminPermanentToken(
+            @AuthenticationPrincipal ContentmunchUser adminUser){
+
+        String permanentToken = tokenizationService.generatePermanentAccessToken(adminUser);
+        log.info("Admin user {} generated a long-lived Bearer token",adminUser.getUsername());
+
+        return ResponseEntity.ok(new AuthResponse(adminUser.username(), permanentToken));
     }
 }

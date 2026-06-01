@@ -30,6 +30,7 @@ public class TokenizationService {
     private static final String CLAIM_ROLES = "roles";
     private static final String CLAIM_USER_ID = "userId";
     private static final String CLAIM_ENABLED = "enabled";
+    private static final String CLAIM_TYPE = "type";
     private final AuthConfigProperties authConfig;
     private SecretKey secretKey;
 
@@ -46,7 +47,7 @@ public class TokenizationService {
     public String generateAccessToken(final ContentmunchUser user){
         Instant now = Instant.now();
         return Jwts.builder().subject(user.getUsername()).claim(CLAIM_EMAIL,user.email()).claim(CLAIM_NAME,user.name())
-                .claim(CLAIM_USER_ID,user.id()).claim(CLAIM_ENABLED,user.enabled())
+                .claim(CLAIM_USER_ID,user.id()).claim(CLAIM_ENABLED,user.enabled()).claim(CLAIM_TYPE,"access")
                 .claim(CLAIM_ROLES,user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authConfig.accessTokenMaxAgeInMinutes(),ChronoUnit.MINUTES)))
@@ -58,6 +59,20 @@ public class TokenizationService {
         return Jwts.builder().subject(user.getUsername()).claim("type","refresh").issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authConfig.refreshTokenMaxAgeDays(),ChronoUnit.DAYS)))
                 .signWith(secretKey).compact();
+    }
+
+    public String generatePermanentAccessToken(final ContentmunchUser user){
+        Instant now = Instant.now();
+        // 100 years in minutes: 100 * 365.25 * 24 * 60
+        long oneHundredYearsInMinutes = 52596000L;
+
+        return Jwts.builder().subject(user.getUsername()).claim(CLAIM_EMAIL,user.email()).claim(CLAIM_NAME,user.name())
+                .claim(CLAIM_USER_ID,user.id()).claim(CLAIM_ENABLED,user.enabled())
+                .claim(CLAIM_ROLES,user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                // Custom claim to identify permanent keys if you need to trace them later
+                .claim(CLAIM_TYPE,"permanent").issuedAt(Date.from(now))
+                .expiration(Date.from(now.plus(oneHundredYearsInMinutes,ChronoUnit.MINUTES))).signWith(secretKey)
+                .compact();
     }
 
     public boolean validateToken(final String token){
