@@ -111,21 +111,29 @@ class AuthControllerMvcTest {
     }
 
     @Test
-    void logout_shouldClearAuthCookie() throws Exception {
-        var logoutCookie =
+    void logout_shouldClearAuthCookieAndRefreshCookie() throws Exception {
+        var logoutAccessCookie =
                 ResponseCookie.from("contentmunch-auth", "").maxAge(0).build();
+        var logoutRefreshCookie =
+                ResponseCookie.from("contentmunch-auth-refresh_token", "").maxAge(0).build();
 
-        when(cookieService.cookieFromAccessToken("", 0)).thenReturn(logoutCookie);
+        when(cookieService.cookieFromAccessToken("", 0)).thenReturn(logoutAccessCookie);
+        when(cookieService.cookieFromRefreshToken("", 0)).thenReturn(logoutRefreshCookie);
 
         mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Logged out"))
-                .andExpect(header().string(
-                                HttpHeaders.SET_COOKIE,
+                .andExpect(header().stringValues(
+                        HttpHeaders.SET_COOKIE,
+                        Matchers.contains(
                                 Matchers.allOf(
                                         Matchers.containsString("contentmunch-auth="),
-                                        Matchers.containsString("Max-Age=0"),
-                                        Matchers.containsString("Expires="))));
+                                        Matchers.containsString("Max-Age=0")),
+                                Matchers.allOf(
+                                        Matchers.containsString("contentmunch-auth-refresh_token="),
+                                        Matchers.containsString("Max-Age=0"))
+                        )
+                ));
     }
 
     @Test

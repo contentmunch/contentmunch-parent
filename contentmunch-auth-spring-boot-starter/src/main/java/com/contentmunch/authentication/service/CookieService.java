@@ -29,16 +29,20 @@ public class CookieService {
         return cookieFromAccessToken(token, authConfig.accessTokenMaxAgeInMinutes());
     }
 
-    public ResponseCookie cookieFromRefreshToken(String token) {
+    public ResponseCookie cookieFromRefreshToken(String token, int maxAgeDays) {
         return ResponseCookie.from(
                         String.format("%s-refresh_token", authConfig.cookie().name()), token)
                 .httpOnly(authConfig.cookie().httpOnly())
                 .secure(authConfig.cookie().secure())
                 .path(authConfig.cookie().refreshTokenPath())
                 .domain(authConfig.cookie().domain())
-                .maxAge(Duration.ofDays(authConfig.refreshTokenMaxAgeDays()))
+                .maxAge(Duration.ofDays(maxAgeDays))
                 .sameSite(authConfig.cookie().sameSite().getValue())
                 .build();
+    }
+
+    public ResponseCookie cookieFromRefreshToken(String token) {
+        return cookieFromRefreshToken(token, authConfig.refreshTokenMaxAgeDays());
     }
 
     public String extractRefreshToken(HttpServletRequest request) {

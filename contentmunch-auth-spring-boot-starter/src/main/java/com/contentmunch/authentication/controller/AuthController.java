@@ -60,8 +60,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        var cookie = cookieService.cookieFromAccessToken("", 0).toString();
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie);
+        var expiredAccessCookie = cookieService.cookieFromAccessToken("", 0).toString();
+        var expiredRefreshCookie = cookieService.cookieFromRefreshToken("", 0).toString();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, expiredAccessCookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredRefreshCookie);
+
         return ResponseEntity.ok("Logged out");
     }
 
