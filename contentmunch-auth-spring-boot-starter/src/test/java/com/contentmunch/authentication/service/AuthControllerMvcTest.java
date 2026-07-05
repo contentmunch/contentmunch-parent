@@ -114,8 +114,9 @@ class AuthControllerMvcTest {
     void logout_shouldClearAuthCookieAndRefreshCookie() throws Exception {
         var logoutAccessCookie =
                 ResponseCookie.from("contentmunch-auth", "").maxAge(0).build();
-        var logoutRefreshCookie =
-                ResponseCookie.from("contentmunch-auth-refresh_token", "").maxAge(0).build();
+        var logoutRefreshCookie = ResponseCookie.from("contentmunch-auth-refresh_token", "")
+                .maxAge(0)
+                .build();
 
         when(cookieService.cookieFromAccessToken("", 0)).thenReturn(logoutAccessCookie);
         when(cookieService.cookieFromRefreshToken("", 0)).thenReturn(logoutRefreshCookie);
@@ -124,16 +125,14 @@ class AuthControllerMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Logged out"))
                 .andExpect(header().stringValues(
-                        HttpHeaders.SET_COOKIE,
-                        Matchers.contains(
-                                Matchers.allOf(
-                                        Matchers.containsString("contentmunch-auth="),
-                                        Matchers.containsString("Max-Age=0")),
-                                Matchers.allOf(
-                                        Matchers.containsString("contentmunch-auth-refresh_token="),
-                                        Matchers.containsString("Max-Age=0"))
-                        )
-                ));
+                                HttpHeaders.SET_COOKIE,
+                                Matchers.contains(
+                                        Matchers.allOf(
+                                                Matchers.containsString("contentmunch-auth="),
+                                                Matchers.containsString("Max-Age=0")),
+                                        Matchers.allOf(
+                                                Matchers.containsString("contentmunch-auth-refresh_token="),
+                                                Matchers.containsString("Max-Age=0")))));
     }
 
     @Test

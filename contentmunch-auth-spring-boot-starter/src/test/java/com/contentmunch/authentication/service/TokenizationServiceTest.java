@@ -41,6 +41,7 @@ class TokenizationServiceTest {
         user = ContentmunchUser.builder()
                 .name("John Doe")
                 .username("user1")
+                .organizationId(1L)
                 .email("john@example.com")
                 .password("password")
                 .roles(Set.of(ContentmunchRole.ROLE_USER))

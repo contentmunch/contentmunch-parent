@@ -13,6 +13,7 @@ public record ContentmunchUser(
         Long id,
         String name,
         String email,
+        Long organizationId,
         Set<ContentmunchRole> roles,
         String username,
         @JsonIgnore String password,

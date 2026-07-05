@@ -25,6 +25,7 @@ public class TokenizationService {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_ROLES = "roles";
     private static final String CLAIM_USER_ID = "userId";
+    private static final String CLAIM_ORG_ID = "organizationId";
     private static final String CLAIM_ENABLED = "enabled";
     private static final String CLAIM_TYPE = "type";
     private final AuthConfigProperties authConfig;
@@ -46,6 +47,7 @@ public class TokenizationService {
                 .claim(CLAIM_EMAIL, user.email())
                 .claim(CLAIM_NAME, user.name())
                 .claim(CLAIM_USER_ID, user.id())
+                .claim(CLAIM_ORG_ID, user.organizationId())
                 .claim(CLAIM_ENABLED, user.enabled())
                 .claim(CLAIM_TYPE, "access")
                 .claim(
@@ -80,6 +82,7 @@ public class TokenizationService {
                 .claim(CLAIM_EMAIL, user.email())
                 .claim(CLAIM_NAME, user.name())
                 .claim(CLAIM_USER_ID, user.id())
+                .claim(CLAIM_ORG_ID, user.organizationId())
                 .claim(CLAIM_ENABLED, user.enabled())
                 .claim(
                         CLAIM_ROLES,
@@ -123,6 +126,7 @@ public class TokenizationService {
         String email = payload.get(CLAIM_EMAIL, String.class);
         String name = payload.get(CLAIM_NAME, String.class);
         Long userId = payload.get(CLAIM_USER_ID, Long.class);
+        Long organizationId = payload.get(CLAIM_ORG_ID, Long.class);
         Boolean enabled = payload.get(CLAIM_ENABLED, Boolean.class);
 
         // Extract roles as a List<String> and map to authorities
@@ -137,6 +141,7 @@ public class TokenizationService {
                 .id(userId)
                 .enabled(enabled)
                 .username(username)
+                .organizationId(organizationId)
                 .email(email)
                 .name(name)
                 .roles(authorities)
