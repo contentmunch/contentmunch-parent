@@ -4,5 +4,6 @@ public enum ContentmunchRole {
     ROLE_API_CLIENT,
     ROLE_USER,
     ROLE_EDITOR,
-    ROLE_ADMIN
+    ROLE_ADMIN,
+    ROLE_SUPER_ADMIN
 }
