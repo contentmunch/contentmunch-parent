@@ -72,11 +72,19 @@ public class TokenizationService {
                 .compact();
     }
 
-    public String generatePermanentAccessToken(final ContentmunchUser user) {
-        Instant now = Instant.now();
-        // 100 years in minutes: 100 * 365.25 * 24 * 60
-        long oneHundredYearsInMinutes = 52596000L;
+    private static final long API_CLIENT_TOKEN_MAX_AGE_DAYS = 365;
 
+    public String generateApiClientToken(final ContentmunchUser user) {
+        var authorities = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        if (!authorities.equals(Set.of(ContentmunchRole.ROLE_API_CLIENT.name()))) {
+            throw new IllegalStateException("Refusing to mint API-client token for user '" + user.getUsername()
+                    + "' -- user must have exactly ROLE_API_CLIENT and nothing else, has: " + authorities);
+        }
+
+        Instant now = Instant.now();
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim(CLAIM_EMAIL, user.email())
@@ -84,15 +92,15 @@ public class TokenizationService {
                 .claim(CLAIM_USER_ID, user.id())
                 .claim(CLAIM_ORG_ID, user.organizationId())
                 .claim(CLAIM_ENABLED, user.enabled())
-                .claim(
-                        CLAIM_ROLES,
-                        user.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .toList())
-                // Custom claim to identify permanent keys if you need to trace them later
-                .claim(CLAIM_TYPE, "permanent")
+                .claim(CLAIM_TYPE, "api_client")
+                // Hardcoded, not user.getAuthorities() -- the token's role is
+                // exactly ROLE_API_CLIENT by construction, independent of what's
+                // actually stored on the user row. The guard above already
+                // requires the row to match this, but the claim itself doesn't
+                // rely on that guard holding forever; it's self-contained.
+                .claim(CLAIM_ROLES, List.of(ContentmunchRole.ROLE_API_CLIENT.name()))
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(oneHundredYearsInMinutes, ChronoUnit.MINUTES)))
+                .expiration(Date.from(now.plus(API_CLIENT_TOKEN_MAX_AGE_DAYS, ChronoUnit.DAYS)))
                 .signWith(secretKey)
                 .compact();
     }

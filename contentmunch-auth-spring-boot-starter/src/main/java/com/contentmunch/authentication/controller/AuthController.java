@@ -1,5 +1,6 @@
 package com.contentmunch.authentication.controller;
 
+import com.contentmunch.authentication.model.ApiClientTokenRequest;
 import com.contentmunch.authentication.model.AuthRequest;
 import com.contentmunch.authentication.model.AuthResponse;
 import com.contentmunch.authentication.model.ContentmunchUser;
@@ -110,14 +111,22 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/permanent-token")
-    @PreAuthorize("hasRole('ADMIN')") // 👈 Restricts access strictly to ADMIN users
-    public ResponseEntity<AuthResponse> generateAdminPermanentToken(
-            @AuthenticationPrincipal ContentmunchUser adminUser) {
+    @PostMapping("/api-client-token")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AuthResponse> generateApiClientToken(
+            @RequestBody ApiClientTokenRequest request, @AuthenticationPrincipal ContentmunchUser adminUser) {
 
-        String permanentToken = tokenizationService.generatePermanentAccessToken(adminUser);
-        log.info("Admin user {} generated a long-lived Bearer token", adminUser.getUsername());
+        var targetUser = userDetailsService.loadUserByUsername(request.username());
+        if (!(targetUser instanceof ContentmunchUser contentmunchUser)) {
+            throw new UsernameNotFoundException("User not found with username: " + request.username());
+        }
 
-        return ResponseEntity.ok(new AuthResponse(adminUser.username(), permanentToken));
+        String token = tokenizationService.generateApiClientToken(contentmunchUser);
+        log.info(
+                "Admin user {} generated an API-client token for service account {}",
+                adminUser.getUsername(),
+                contentmunchUser.getUsername());
+
+        return ResponseEntity.ok(new AuthResponse(contentmunchUser.username(), token));
     }
 }
