@@ -28,6 +28,8 @@ public class TokenizationService {
     private static final String CLAIM_ORG_ID = "organizationId";
     private static final String CLAIM_ENABLED = "enabled";
     private static final String CLAIM_TYPE = "type";
+    private static final String TOKEN_TYPE_API_CLIENT = "api_client";
+
     private final AuthConfigProperties authConfig;
     private SecretKey secretKey;
 
@@ -92,7 +94,7 @@ public class TokenizationService {
                 .claim(CLAIM_USER_ID, user.id())
                 .claim(CLAIM_ORG_ID, user.organizationId())
                 .claim(CLAIM_ENABLED, user.enabled())
-                .claim(CLAIM_TYPE, "api_client")
+                .claim(CLAIM_TYPE, TOKEN_TYPE_API_CLIENT)
                 // Hardcoded, not user.getAuthorities() -- the token's role is
                 // exactly ROLE_API_CLIENT by construction, independent of what's
                 // actually stored on the user row. The guard above already
@@ -103,6 +105,15 @@ public class TokenizationService {
                 .expiration(Date.from(now.plus(API_CLIENT_TOKEN_MAX_AGE_DAYS, ChronoUnit.DAYS)))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public boolean isApiClientToken(String token) {
+        var payload = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return TOKEN_TYPE_API_CLIENT.equals(payload.get(CLAIM_TYPE, String.class));
     }
 
     public boolean validateToken(final String token) {
